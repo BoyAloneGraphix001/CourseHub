@@ -1,0 +1,22 @@
+<footer class="sticky bottom-0 left-0 right-0 z-30 mt-10 border-t border-gray-200 bg-white py-8 text-sm text-gray-500">
+  <div class="mx-auto flex max-w-6xl flex-col items-center gap-5 px-4">
+
+    <button type="button" data-back-top aria-label="Back to top"
+            class="inline-flex items-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:border-brand-500 hover:text-brand-600 cursor-pointer">
+      <span class="text-base leading-none">&uarr;</span>Back to top
+    </button>
+
+    <nav class="flex flex-wrap justify-center gap-x-6 gap-y-2" aria-label="Footer">
+      <a href="{{ url_for('main.index') }}" class="hover:text-gray-900">Home</a>
+      <a href="{{ url_for('main.catalog') }}" class="hover:text-gray-900">Courses</a> <!--{# change main.index to main.catalog later #}-->
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('student.dashboard') }}" class="hover:text-gray-900">Dashboard</a>
+      {% else %}
+        <a href="{{ url_for('auth.login') }}" class="hover:text-gray-900">Log in</a>
+        <a href="{{ url_for('auth.register') }}" class="hover:text-gray-900">Sign up</a>
+      {% endif %}
+    </nav>
+
+    <p>&copy; CourseHub. Free courses for everyone.</p>
+  </div>
+</footer>

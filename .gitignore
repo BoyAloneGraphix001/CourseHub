@@ -1,0 +1,36 @@
+# Python
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+
+# Secrets and local data (never commit)
+.env
+instance/
+*.db
+*.sqlite3
+
+# Node and Tailwind
+node_modules/
+app/static/css/tailwind.css
+
+# User uploads (keep the folder, not the files)
+app/static/uploads/*
+!app/static/uploads/.gitkeep
+
+# Tests, logs, tooling
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Distribution / build files
+build/
+dist/
+*.egg-info/

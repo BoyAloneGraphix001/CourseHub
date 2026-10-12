@@ -1,0 +1,49 @@
+{# Each link: (endpoint, label, [endpoints that count as active], blueprint that counts as active) #}
+{% set nav_links = [
+  ('main.index',   'Home',    ['main.index'], none),
+  ('main.catalog', 'Courses', ['main.catalog', 'main.course_detail', 'main.instructor_profile'], none), 
+] %} {# change main.index to main.catalog later #}
+{% if current_user.is_authenticated %}
+  {% set nav_links = nav_links + [('student.dashboard', 'Dashboard', [], 'student')] %}
+  {% if current_user.is_instructor %}
+    {% set nav_links = nav_links + [('instructor.dashboard', 'Teach', [], 'instructor')] %}
+  {% endif %}
+  {% if current_user.is_admin %}
+    {% set nav_links = nav_links + [('admin.dashboard', 'Admin', [], 'admin')] %}
+  {% endif %}
+{% endif %}
+
+<header class="sticky top-0 z-30 border-b border-gray-200 bg-white">
+  <nav class="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3.5" aria-label="Main">
+
+    <a href="{{ url_for('main.index') }}" class="flex shrink-0 items-center gap-2 text-lg font-bold text-gray-900">
+      <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-600 text-sm text-white">C</span>
+      <span class="hidden sm:inline">CourseHub</span>
+    </a>
+
+    <div class="flex min-w-0 items-center gap-4 overflow-x-auto whitespace-nowrap text-sm font-medium text-gray-600 sm:gap-6">
+      {% for endpoint, label, endpoints, bp in nav_links %}
+        {% set active = request.endpoint in endpoints or (bp and request.blueprint == bp) %}
+        <a href="{{ url_for(endpoint) }}"
+           {% if active %}aria-current="page"{% endif %}
+           class="{{ 'font-semibold text-brand-700' if active else 'hover:text-gray-900' }}">{{ label }}</a>
+      {% endfor %}
+    </div>
+
+    <div class="flex shrink-0 items-center gap-2">
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('student.profile') }}"
+           class="hidden max-w-50 truncate px-2 text-sm font-medium text-gray-700 hover:text-brand-600 md:block">
+          {{ current_user.name }}
+        </a>
+        <form method="post" action="{{ url_for('auth.logout') }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn-outline">Log out</button>
+        </form>
+      {% else %}
+        <a href="{{ url_for('auth.login') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900">Log in</a>
+        <a href="{{ url_for('auth.register') }}" class="btn-primary">Sign up</a>
+      {% endif %}
+    </div>
+  </nav>
+</header>

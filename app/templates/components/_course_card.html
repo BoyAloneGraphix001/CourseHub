@@ -1,0 +1,46 @@
+<article class="card flex h-full flex-col overflow-hidden transition hover:shadow-md">
+
+  <a href="{{ url_for('main.course_detail', course_id=course.id) }}" class="relative block" tabindex="-1" aria-hidden="true">
+    {% if course.thumbnail %}
+      <img src="{{ url_for('static', filename='uploads/course_thumbnails/' ~ course.thumbnail) }}"
+           alt="" loading="lazy" class="aspect-video w-full object-cover">
+    {% else %}
+      <div class="flex aspect-video items-center justify-center bg-brand-50 text-5xl font-bold text-brand-600">
+        {{ course.title[:1] | upper }}
+      </div>
+    {% endif %}
+    <span class="absolute left-3 top-3 rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-brand-700">Free</span>
+  </a>
+
+  <div class="flex flex-1 flex-col p-5">
+    <h3 class="font-semibold leading-snug">
+      <a href="{{ url_for('main.course_detail', course_id=course.id) }}" class="hover:text-brand-600">{{ course.title }}</a>
+    </h3>
+    <p class="mt-1 text-sm text-gray-500">
+      by <a href="{{ url_for('main.instructor_profile', user_id=course.instructor.id) }}"
+            class="hover:text-brand-600 hover:underline">{{ course.instructor.name }}</a>
+    </p>
+
+    {% if progress is defined and progress is not none %}
+      <div class="mt-4">
+        <div class="h-2 w-full rounded-full bg-gray-200">
+          <!-- <div class="grow h-2 rounded-full bg-brand-600" style="width: {{ progress }}%"></div> -->
+        </div>
+        <p class="mt-1.5 text-xs text-gray-500">{{ progress }}% complete</p>
+      </div>
+    {% endif %}
+
+    <div class="mt-auto flex flex-wrap items-center gap-2 pt-4 text-xs text-gray-600">
+      {% if course.category %}
+        <span class="rounded-full bg-gray-100 px-2.5 py-1">{{ course.category.name }}</span>
+      {% endif %}
+      {% if course.level %}
+        <span class="rounded-full bg-gray-100 px-2.5 py-1">{{ course.level | capitalize }}</span>
+      {% endif %}
+      <span class="ml-auto text-gray-500">
+        {% set n = course.sections | map(attribute='lessons') | map('length') | sum %}
+        {{ n }} lesson{{ '' if n == 1 else 's' }}
+      </span>
+    </div>
+  </div>
+</article>

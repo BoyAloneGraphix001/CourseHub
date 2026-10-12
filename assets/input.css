@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+/* explicit template scan paths (safe even though v4 auto-detects) */
+@source "../app/templates";
+
+/* optional plugins */
+@plugin "@tailwindcss/forms";
+@plugin "@tailwindcss/typography";
+
+/* design tokens: change the look in ONE place */
+@theme {
+  --color-brand-50:  #effaf8;
+  --color-brand-100: #d3f1ec;
+  --color-brand-500: #1f9d90;
+  --color-brand-600: #167d73;
+  --color-brand-700: #136259;
+  --color-brand-900: #0c332f;
+
+  --color-sand-500:  #e3b66b;
+
+  --font-sans: "Roboto", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* reusable component classes for patterns you repeat everywhere */
+@utility btn {
+  @apply inline-flex items-center justify-center rounded-lg px-4 py-2
+         text-sm font-medium transition focus:outline-none focus:ring-2;
+}
+
+@utility btn-primary {
+  @apply btn bg-brand-600 text-white hover:bg-brand-700 focus:ring-brand-500;
+}
+
+@utility btn-outline {
+  @apply btn border border-gray-300 text-gray-700 hover:bg-gray-50;
+}
+
+@utility card {
+  @apply rounded-xl border border-gray-200 bg-white shadow-sm;
+}
+@utility page-container {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 72rem;
+  padding-inline: 1rem;
+}
+
+/* Scroll reveal (class added by index.js) */
+#app .rv {
+  opacity: 0;
+  transform: translateY(28px) scale(0.985);
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--d, 0ms);
+}
+#app .rv.in { opacity: 1; transform: none; }
+
+/* Progress bars that grow in */
+@keyframes grow { from { width: 0; } }
+.grow { animation: grow 1s cubic-bezier(0.22, 1, 0.36, 1) 0.35s both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .grow { animation: none; }
+}

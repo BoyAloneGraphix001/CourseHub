@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% from "components/_form_field.html" import render_field, render_password, render_checkbox %} 
+
+{# {% block title %}Create account | CourseHub{% endblock %} #}
+
+{% block content %}
+<div class="mx-auto max-w-md "> <!--Work on the size of the card later-->
+  <div class="card p-8">
+
+    <h1 class="text-2xl font-bold tracking-tight">Create your free account</h1>
+    <p class="mt-1 text-sm text-gray-600">Registering unlocks every course video.</p>
+
+    <form method="POST" novalidate class="mt-6"
+          action="{{ url_for('auth.register', next=request.args.get('next')) }}">
+      {{ form.hidden_tag() }}
+
+      {{ render_field(form.username, autocomplete='name', autofocus=true) }}
+      {{ render_field(form.email, placeholder='you@example.com', autocomplete='email') }}
+      {{ render_password(form.password) }}
+      {{ render_password(form.confirm) }}
+      {{ render_checkbox(form.teach) }}
+
+      {{ form.submit(class_='btn-primary w-full') }}
+    </form>
+
+    <p class="mt-6 text-center text-sm text-gray-600">
+      Already registered?
+      <a href="{{ url_for('auth.login', next=request.args.get('next')) }}"
+         class="font-semibold text-brand-600 hover:underline">Log in</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

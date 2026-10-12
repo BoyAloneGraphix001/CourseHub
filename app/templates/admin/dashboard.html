@@ -1,0 +1,66 @@
+{% extends "admin/layout.html" %}
+
+{% block title %}Admin overview | CourseHub{% endblock %}
+
+{% block admin_content %}
+  <h1 class="text-3xl font-bold tracking-tight">Overview</h1>
+  <p class="mt-1 text-gray-600">A quick look at what's happening on the platform.</p>
+
+  <div class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+    {% for label, value, note, link in [
+      ('Users',        stats.users,       stats.instructors ~ ' instructors', url_for('admin.users')),
+      ('Courses',      stats.courses,     stats.published ~ ' published',     url_for('admin.courses')),
+      ('Enrollments',  stats.enrollments, 'across all courses',               none),
+      ('Open reports', stats.reports,     'waiting for review',               url_for('admin.reports')),
+    ] %}
+      {% if link %}<a href="{{ link }}" class="card block p-5 transition hover:border-brand-500">{% else %}<div class="card p-5">{% endif %}
+        <p class="text-sm text-gray-500">{{ label }}</p>
+        <p class="mt-1 text-3xl font-bold text-brand-700">{{ value }}</p>
+        <p class="mt-1 text-xs text-gray-500">{{ note }}</p>
+      {% if link %}</a>{% else %}</div>{% endif %}
+    {% endfor %}
+  </div>
+
+  <div class="mt-10 grid gap-6 xl:grid-cols-2">
+
+    <div>
+      <div class="flex items-end justify-between">
+        <h2 class="text-lg font-semibold">Latest sign-ups</h2>
+        <a href="{{ url_for('admin.users') }}" class="text-sm font-semibold text-brand-600 hover:underline">All users</a>
+      </div>
+      <div class="card mt-3 divide-y divide-gray-100">
+        {% for u in recent_users %}
+          <div class="flex items-center gap-3 px-5 py-3">
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-50 text-xs font-semibold text-brand-700">
+              {{ (u.username.split()[:2] | map('first') | join('')) | upper }}
+            </span>
+            <div class="min-w-0 flex-1">
+              <p class="truncate text-sm font-semibold">{{ u.username }}</p>
+              <p class="truncate text-xs text-gray-500">{{ u.email }}</p>
+            </div>
+            <span class="text-xs text-gray-400">{{ u.created_at.strftime('%b %d') }}</span>
+          </div>
+        {% else %}
+          <p class="px-5 py-8 text-center text-sm text-gray-500">No users yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div>
+      <div class="flex items-end justify-between">
+        <h2 class="text-lg font-semibold">Open reports</h2>
+        <a href="{{ url_for('admin.reports') }}" class="text-sm font-semibold text-brand-600 hover:underline">All reports</a>
+      </div>
+      <div class="card mt-3 divide-y divide-gray-100">
+        {% for r in open_reports %}
+          <div class="px-5 py-3">
+            <p class="truncate text-sm font-semibold">{{ r.course.title }}</p>
+            <p class="truncate text-xs text-gray-500">{{ r.reason }}</p>
+          </div>
+        {% else %}
+          <p class="px-5 py-8 text-center text-sm text-gray-500">Nothing to review. All clear.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -18,7 +18,7 @@
     </h3>
     <p class="mt-1 text-sm text-gray-500">
       by <a href="{{ url_for('main.instructor_profile', user_id=course.instructor.id) }}"
-            class="hover:text-brand-600 hover:underline">{{ course.instructor.name }}</a>
+            class="hover:text-brand-600 hover:underline">{{ course.instructor.username }}</a>
     </p>
 
     {% if progress is defined and progress is not none %}
@@ -32,7 +32,7 @@
 
     <div class="mt-auto flex flex-wrap items-center gap-2 pt-4 text-xs text-gray-600">
       {% if course.category %}
-        <span class="rounded-full bg-gray-100 px-2.5 py-1">{{ course.category.name }}</span>
+        <span class="rounded-full bg-gray-100 px-2.5 py-1">{{ course.category.username }}</span>
       {% endif %}
       {% if course.level %}
         <span class="rounded-full bg-gray-100 px-2.5 py-1">{{ course.level | capitalize }}</span>

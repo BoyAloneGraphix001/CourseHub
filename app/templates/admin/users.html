@@ -1,0 +1,67 @@
+{% extends "admin/layout.html" %}
+{% from "components/_pagination.html" import render_pagination %}
+
+{% block title %}Users | CourseHub Admin{% endblock %}
+
+{% block admin_content %}
+  <h1 class="text-3xl font-bold tracking-tight">Users</h1>
+  <p class="mt-1 text-gray-600">Search accounts and suspend or restore access.</p>
+
+  <form method="get" class="mt-6 flex max-w-xl gap-2" role="search">
+    {% if role %}<input type="hidden" name="role" value="{{ role }}">{% endif %}
+    <label for="q" class="sr-only">Search users</label>
+    <input id="q" name="q" type="search" value="{{ q }}" placeholder="Search by name or email"
+           class="w-full rounded-lg border border-gray-300 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30">
+    <button class="btn-primary shrink-0 px-5">Search</button>
+  </form>
+
+  <div class="mt-4 flex flex-wrap gap-2">
+    {% set chip = 'rounded-full border px-3.5 py-1.5 text-sm transition' %}
+    {% set on  = 'border-brand-600 bg-brand-50 font-semibold text-brand-700' %}
+    {% set off = 'border-gray-300 bg-white text-gray-700 hover:border-brand-500' %}
+    {% for value, label in [('', 'All'), ('instructor', 'Instructors'), ('admin', 'Admins'), ('suspended', 'Suspended')] %}
+      <a href="{{ url_for('admin.users', q=q or None, role=value or None) }}"
+         class="{{ chip }} {{ on if role == value else off }}">{{ label }}</a>
+    {% endfor %}
+  </div>
+
+  <p class="mt-6 text-sm text-gray-500">{{ pagination.total }} user{{ '' if pagination.total == 1 else 's' }}</p>
+
+  <div class="card mt-3 divide-y divide-gray-100">
+    {% for u in pagination.items %}
+      <div class="flex flex-wrap items-center gap-3 px-5 py-4">
+        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-50 text-sm font-semibold text-brand-700">
+          {{ (u.username.split()[:2] | map('first') | join('')) | upper }}
+        </span>
+
+        <div class="min-w-0 flex-1">
+          <p class="truncate font-semibold">{{ u.username }}</p>
+          <p class="truncate text-sm text-gray-500">{{ u.email }} &middot; joined {{ u.created_at.strftime('%b %d, %Y') }}</p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">
+          {% if u.is_admin %}<span class="rounded-full bg-brand-600 px-2.5 py-1 text-white">Admin</span>{% endif %}
+          {% if u.is_instructor %}<span class="rounded-full bg-brand-50 px-2.5 py-1 text-brand-700">Instructor</span>{% endif %}
+          {% if not u.is_active_account %}<span class="rounded-full bg-red-50 px-2.5 py-1 text-red-700">Suspended</span>{% endif %}
+        </div>
+
+        {% if u.id != current_user.id and not u.is_admin %}
+          <form method="post" action="{{ url_for('admin.toggle_user', user_id=u.id) }}"
+            data-confirm="{{ 'Restore this account?' if not u.is_active_account else 'Suspend this account? They will not be able to log in.' }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="next" value="{{ request.full_path }}">
+            {% if u.is_active_account %}
+              <button class="btn border border-red-200 bg-white text-red-700 hover:bg-red-50">Suspend</button>
+            {% else %}
+              <button class="btn-outline">Restore</button>
+            {% endif %}
+          </form>
+        {% endif %}
+      </div>
+    {% else %}
+      <p class="px-5 py-12 text-center text-sm text-gray-500">No users match.</p>
+    {% endfor %}
+  </div>
+
+  {{ render_pagination(pagination, 'admin.users', q=q or None, role=role or None) }}
+{% endblock %}

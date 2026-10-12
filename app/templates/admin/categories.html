@@ -1,0 +1,52 @@
+{% extends "admin/layout.html" %}
+{% from "components/_form_field.html" import render_field %}
+
+{% block title %}Categories | CourseHub Admin{% endblock %}
+
+{% block admin_content %}
+  <h1 class="text-3xl font-bold tracking-tight">Categories</h1>
+  <p class="mt-1 text-gray-600">Learners filter the catalog by these.</p>
+
+  <form method="post" novalidate class="card mt-6 p-5">
+    {{ form.hidden_tag() }}
+    <div class="flex flex-wrap items-start gap-3">
+      <div class="min-w-55 flex-1">
+        {{ render_field(form.name, placeholder='For example: Photography') }}
+      </div>
+      <div class="pt-[1.65rem]">{{ form.submit(class_='btn-primary') }}</div>
+    </div>
+  </form>
+
+  <div class="card mt-6 divide-y divide-gray-100">
+    {% for category, count in rows %}
+      <div class="flex flex-wrap items-center gap-3 px-5 py-4">
+
+        <form method="post" action="{{ url_for('admin.rename_category', category_id=category.id) }}"
+              class="flex min-w-55 flex-1 gap-2">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <label for="cat-{{ category.id }}" class="sr-only">Category name</label>
+          <input id="cat-{{ category.id }}" name="name" value="{{ category.name }}" required minlength="2" maxlength="80"
+                 class="w-full rounded-lg border border-gray-300 bg-white px-3.5 py-2 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30">
+          <button class="btn-outline shrink-0">Save</button>
+        </form>
+
+        <span class="text-sm text-gray-500">{{ count }} course{{ '' if count == 1 else 's' }}</span>
+
+        {% if count == 0 %}
+        <form method="post" action="{{ url_for('admin.delete_category', category_id=category.id) }}"
+            data-confirm="Delete this category?">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn border border-red-200 bg-white text-red-700 hover:bg-red-50">Delete</button>
+          </form>
+        {% else %}
+          <span class="w-22 text-center text-xs text-gray-400" title="Move its courses to another category first">In use</span>
+        {% endif %}
+      </div>
+    {% else %}
+      <div class="px-5 py-12 text-center">
+        <p class="font-semibold">No categories yet</p>
+        <p class="mt-1 text-sm text-gray-500">Add your first one above, or run <code>flask seed-categories</code>.</p>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}

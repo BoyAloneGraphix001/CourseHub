@@ -14,7 +14,7 @@
           action="{{ url_for('auth.register', next=request.args.get('next')) }}">
       {{ form.hidden_tag() }}
 
-      {{ render_field(form.username, autocomplete='name', autofocus=true) }}
+      {{ render_field(form.username, autocomplete='username', autofocus=true) }}
       {{ render_field(form.email, placeholder='you@example.com', autocomplete='email') }}
       {{ render_password(form.password) }}
       {{ render_password(form.confirm) }}

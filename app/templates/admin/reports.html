@@ -1,0 +1,67 @@
+{% extends "admin/layout.html" %}
+{% from "components/_pagination.html" import render_pagination %}
+
+{% block title %}Reports | CourseHub Admin{% endblock %}
+
+{% block admin_content %}
+  <h1 class="text-3xl font-bold tracking-tight">Reported courses</h1>
+  <p class="mt-1 text-gray-600">Review what learners have flagged.</p>
+
+  <div class="mt-6 flex flex-wrap gap-2">
+    {% set chip = 'rounded-full border px-3.5 py-1.5 text-sm transition' %}
+    {% set on  = 'border-brand-600 bg-brand-50 font-semibold text-brand-700' %}
+    {% set off = 'border-gray-300 bg-white text-gray-700 hover:border-brand-500' %}
+    {% for value, label in [('open', 'Open'), ('resolved', 'Resolved'), ('all', 'All')] %}
+      <a href="{{ url_for('admin.reports', status=value) }}"
+         class="{{ chip }} {{ on if status == value else off }}">{{ label }}</a>
+    {% endfor %}
+  </div>
+
+  <div class="card mt-6 divide-y divide-gray-100">
+    {% for r in pagination.items %}
+      <div class="px-5 py-4">
+        <div class="flex flex-wrap items-start gap-3">
+          <div class="min-w-0 flex-1">
+            <a href="{{ url_for('main.course_detail', course_id=r.course.id) }}"
+               class="block truncate font-semibold hover:text-brand-600">{{ r.course.title }}</a>
+            <p class="text-sm text-gray-500">
+              by {{ r.course.instructor.username }} &middot;
+              reported by {{ r.reporter.username }} &middot; {{ r.created_at.strftime('%b %d, %Y') }}
+            </p>
+          </div>
+          <span class="rounded-full px-2.5 py-1 text-xs font-semibold {{ 'bg-yellow-50 text-yellow-800' if r.status == 'open' else 'bg-gray-100 text-gray-600' }}">
+            {{ r.status | capitalize }}
+          </span>
+        </div>
+
+        <p class="mt-3 whitespace-pre-line rounded-lg bg-gray-50 px-4 py-3 text-sm text-gray-700">{{ r.reason }}</p>
+
+        {% if r.status == 'open' %}
+          <div class="mt-3 flex flex-wrap gap-2">
+            <form method="post" action="{{ url_for('admin.resolve_report', report_id=r.id) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <input type="hidden" name="next" value="{{ request.full_path }}">
+              <button class="btn-primary">Resolve</button>
+            </form>
+
+            {% if r.course.is_published %}
+              <form method="post" action="{{ url_for('admin.unpublish_reported', report_id=r.id) }}"
+                data-confirm="Unpublish this course and resolve its open reports?">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="next" value="{{ request.full_path }}">
+                <button class="btn border border-red-200 bg-white text-red-700 hover:bg-red-50">Unpublish course</button>
+              </form>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+    {% else %}
+      <div class="px-5 py-14 text-center">
+        <p class="font-semibold">{{ 'Nothing to review' if status == 'open' else 'No reports here' }}</p>
+        <p class="mt-1 text-sm text-gray-500">Reports from learners will show up on this page.</p>
+      </div>
+    {% endfor %}
+  </div>
+
+  {{ render_pagination(pagination, 'admin.reports', status=status) }}
+{% endblock %}

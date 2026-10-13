@@ -32,7 +32,7 @@
 
     <div class="flex shrink-0 items-center gap-2">
       {% if current_user.is_authenticated %}
-        <a href="{{ url_for('student.profile') }}"
+        <a href="{{ avatar(current_user, 'h-8 w-8 text-xs') }}"
            class="hidden max-w-50 truncate px-2 text-sm font-medium text-gray-700 hover:text-brand-600 md:block">
           {{ current_user.username }}
         </a>

@@ -1,0 +1,67 @@
+{% extends "student/layout.html" %}
+{% from "components/_avatar.html" import avatar %}
+
+{% block title %}Profile | CourseHub{% endblock %}
+
+{% block student_content %}
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <h1 class="text-3xl font-bold tracking-tight">Profile</h1>
+    <a href="{{ url_for('student.edit_profile') }}" class="btn-primary">Edit profile</a>
+  </div>
+
+  <div class="card mt-6 p-6">
+    <div class="flex items-center gap-4">
+      {{ avatar(current_user, 'h-16 w-16 text-xl') }}
+      <div class="min-w-0">
+        <p class="truncate text-lg font-semibold">{{ current_user.username }}</p>
+        <p class="truncate text-sm text-gray-500">
+          {{ current_user.headline if current_user.is_instructor and current_user.headline else ('Instructor' if current_user.is_instructor else 'Learner') }}
+        </p>
+      </div>
+    </div>
+
+    <dl class="mt-6 grid gap-5 sm:grid-cols-2">
+      <div>
+        <dt class="text-xs text-gray-500">Username</dt>
+        <dd class="mt-0.5 text-sm">{{ current_user.username }}</dd>
+      </div>
+      <div>
+        <dt class="text-xs text-gray-500">Email</dt>
+        <dd class="mt-0.5 break-all text-sm">{{ current_user.email }}</dd>
+      </div>
+      {% if current_user.is_instructor %}
+        <div>
+          <dt class="text-xs text-gray-500">Headline</dt>
+          <dd class="mt-0.5 text-sm {{ '' if current_user.headline else 'text-gray-400' }}">{{ current_user.headline or 'Not added yet' }}</dd>
+        </div>
+      {% endif %}
+      <div>
+        <dt class="text-xs text-gray-500">Member since</dt>
+        <dd class="mt-0.5 text-sm">{{ current_user.created_at.strftime('%b %d, %Y') }}</dd>
+      </div>
+      <div>
+        <dt class="text-xs text-gray-500">Last updated</dt>
+        <dd class="mt-0.5 text-sm {{ '' if updates else 'text-gray-400' }}">
+          {{ current_user.updated_at.strftime('%b %d, %Y') if updates and current_user.updated_at else 'No changes yet' }}
+        </dd>
+      </div>
+    </dl>
+
+    <div class="mt-5">
+      <p class="text-xs text-gray-500">Bio</p>
+      <p class="mt-0.5 whitespace-pre-line text-sm {{ '' if current_user.bio else 'text-gray-400' }}">{{ current_user.bio or 'Not added yet' }}</p>
+    </div>
+  </div>
+
+  <h2 class="mt-8 text-lg font-semibold">Recent updates</h2>
+  <div class="card mt-3 divide-y divide-gray-100">
+    {% for u in updates %}
+      <div class="flex items-center justify-between gap-3 px-5 py-3 text-sm">
+        <span>{{ u.summary }}</span>
+        <span class="shrink-0 text-gray-500">{{ u.created_at.strftime('%b %d, %Y, %I:%M %p') }} UTC</span>
+      </div>
+    {% else %}
+      <p class="px-5 py-8 text-center text-sm text-gray-500">Changes you make to your profile will be listed here.</p>
+    {% endfor %}
+  </div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% macro course_header(course) %}
+  <div class="flex flex-wrap items-start justify-between gap-3">
+    <div class="min-w-0">
+      <a href="{{ url_for('instructor.courses') }}" class="text-sm text-gray-500 hover:text-brand-600">&larr; My courses</a>
+      <h1 class="mt-1 truncate text-2xl font-bold tracking-tight">{{ course.title }}</h1>
+    </div>
+    <div class="flex flex-wrap items-center gap-2">
+      <span class="rounded-full px-2.5 py-1 text-xs font-semibold {{ 'bg-brand-50 text-brand-700' if course.is_published else 'bg-gray-100 text-gray-600' }}">
+        {{ 'Published' if course.is_published else 'Draft' }}
+      </span>
+      <a href="{{ url_for('main.course_detail', course_id=course.id) }}" class="btn-outline">
+        {{ 'View page' if course.is_published else 'Preview' }}
+      </a>
+      <form method="post" action="{{ url_for('instructor.toggle_publish', course_id=course.id) }}"
+            data-confirm="{{ 'Unpublish this course? Learners will no longer see it.' if course.is_published else 'Publish this course for everyone?' }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="next" value="{{ request.full_path }}">
+        <button class="{{ 'btn-outline' if course.is_published else 'btn-primary' }}">
+          {{ 'Unpublish' if course.is_published else 'Publish' }}
+        </button>
+      </form>
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro course_tabs(course, active) %}
+  <nav class="mt-6 flex gap-1 overflow-x-auto border-b border-gray-200" aria-label="Course sections">
+    {% for key, label, endpoint in [
+      ('details', 'Details', 'instructor.edit_course'),
+      ('curriculum', 'Curriculum', 'instructor.curriculum'),
+      ('students', 'Students', 'instructor.students'),
+    ] %}
+      <a href="{{ url_for(endpoint, course_id=course.id) }}" {% if key == active %}aria-current="page"{% endif %}
+         class="whitespace-nowrap border-b-2 px-4 py-2.5 text-sm font-medium {{ 'border-brand-600 text-brand-700' if key == active else 'border-transparent text-gray-500 hover:text-gray-900' }}">
+        {{ label }}
+      </a>
+    {% endfor %}
+  </nav>
+{% endmacro %}

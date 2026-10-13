@@ -198,3 +198,11 @@ class Report(db.Model):
     course = db.relationship('Course',
                              backref=db.backref('reports', cascade='all, delete-orphan'))
     reporter = db.relationship('User')
+
+class ProfileUpdate(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
+    summary = db.Column(db.String(120), nullable=False)       # e.g. "Bio updated"
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
+
+    user = db.relationship('User', backref=db.backref('profile_updates', cascade='all, delete-orphan'))

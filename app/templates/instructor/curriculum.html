@@ -1,0 +1,78 @@
+{% extends "instructor/layout.html" %}
+{% from "components/_course_tabs.html" import course_header, course_tabs %}
+
+{% macro mover(action) %}
+  <form method="post" action="{{ action }}" class="flex">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button name="direction" value="up" aria-label="Move up" class="rounded px-2 py-1 text-gray-500 hover:bg-gray-100">&uarr;</button>
+    <button name="direction" value="down" aria-label="Move down" class="rounded px-2 py-1 text-gray-500 hover:bg-gray-100">&darr;</button>
+  </form>
+{% endmacro %}
+
+{% block title %}Curriculum | {{ course.title }}{% endblock %}
+
+{% block instructor_content %}
+  {{ course_header(course) }}
+  {{ course_tabs(course, 'curriculum') }}
+
+  {% if course.lesson_count == 0 %}
+    <p class="mt-6 rounded-lg border border-yellow-200 bg-yellow-50 px-4 py-3 text-sm text-yellow-800">
+      Add at least one lesson before you can publish this course.
+    </p>
+  {% endif %}
+
+  <form method="post" action="{{ url_for('instructor.add_section', course_id=course.id) }}" class="card mt-6 flex flex-wrap gap-3 p-4">
+    {{ section_form.hidden_tag() }}
+    <label for="new-section" class="sr-only">New section title</label>
+    <input id="new-section" name="title" required minlength="2" maxlength="150" placeholder="New section title, for example Getting started"
+           class="min-w-[220px] flex-1 rounded-lg border border-gray-300 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30">
+    <button class="btn-primary">Add section</button>
+  </form>
+
+  {% for section in course.sections %}
+    <div class="card mt-5">
+      <div class="flex flex-wrap items-center gap-2 border-b border-gray-100 px-4 py-3">
+        <form method="post" action="{{ url_for('instructor.rename_section', section_id=section.id) }}" class="flex min-w-[200px] flex-1 gap-2">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <label for="sec-{{ section.id }}" class="sr-only">Section title</label>
+          <input id="sec-{{ section.id }}" name="title" value="{{ section.title }}" required minlength="2" maxlength="150"
+                 class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-semibold outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30">
+          <button class="btn-outline shrink-0">Save</button>
+        </form>
+        {{ mover(url_for('instructor.move_section', section_id=section.id)) }}
+        <form method="post" action="{{ url_for('instructor.delete_section', section_id=section.id) }}"
+              data-confirm="Delete this section and all its lessons?">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="btn border border-red-200 bg-white text-red-700 hover:bg-red-50">Delete</button>
+        </form>
+      </div>
+
+      <ul class="divide-y divide-gray-100">
+        {% for lesson in section.lessons %}
+          <li class="flex flex-wrap items-center gap-3 px-4 py-3 text-sm">
+            <span class="min-w-0 flex-1 truncate">{{ loop.index }}. {{ lesson.title }}</span>
+            <span class="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">{{ 'Video' if lesson.video_url else 'Text' }}</span>
+            {{ mover(url_for('instructor.move_lesson', lesson_id=lesson.id)) }}
+            <a href="{{ url_for('instructor.edit_lesson', lesson_id=lesson.id) }}" class="font-medium text-brand-600 hover:underline">Edit</a>
+            <form method="post" action="{{ url_for('instructor.delete_lesson', lesson_id=lesson.id) }}" data-confirm="Delete this lesson?">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="font-medium text-red-700 hover:underline">Delete</button>
+            </form>
+          </li>
+        {% else %}
+          <li class="px-4 py-4 text-sm text-gray-400">No lessons in this section yet.</li>
+        {% endfor %}
+      </ul>
+
+      <div class="border-t border-gray-100 px-4 py-3">
+        <a href="{{ url_for('instructor.new_lesson', section_id=section.id) }}"
+           class="text-sm font-semibold text-brand-600 hover:underline">+ Add lesson</a>
+      </div>
+    </div>
+  {% else %}
+    <div class="card mt-5 px-6 py-12 text-center">
+      <p class="font-semibold">No sections yet</p>
+      <p class="mt-1 text-sm text-gray-500">Sections group your lessons, like chapters. Add your first one above.</p>
+    </div>
+  {% endfor %}
+{% endblock %}

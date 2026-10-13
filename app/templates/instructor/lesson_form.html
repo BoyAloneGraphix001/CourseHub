@@ -1,0 +1,26 @@
+{% extends "instructor/layout.html" %}
+{% from "components/_form_field.html" import render_field %}
+
+{% block title %}{{ 'Edit lesson' if lesson else 'New lesson' }} | CourseHub{% endblock %}
+
+{% block instructor_content %}
+  <a href="{{ url_for('instructor.curriculum', course_id=course.id) }}"
+     class="text-sm text-gray-500 hover:text-brand-600">&larr; {{ course.title }}</a>
+  <h1 class="mt-1 text-3xl font-bold tracking-tight">{{ 'Edit lesson' if lesson else 'New lesson' }}</h1>
+  <p class="mt-1 text-gray-600">In section: {{ section.title }}</p>
+
+  <form method="post" novalidate class="card mt-6 p-6"
+        action="{{ url_for('instructor.edit_lesson', lesson_id=lesson.id) if lesson else url_for('instructor.new_lesson', section_id=section.id) }}">
+    {{ form.hidden_tag() }}
+
+    {{ render_field(form.title, placeholder='For example: Welcome and setup', autofocus=true) }}
+    {{ render_field(form.video_url, placeholder='https://www.youtube.com/watch?v=...') }}
+    <p class="-mt-2 mb-4 text-xs text-gray-500">Paste a YouTube or Vimeo link. Leave it empty for a text-only lesson.</p>
+    {{ render_field(form.body, rows=8, placeholder='Notes, instructions or a transcript for this lesson.') }}
+
+    <div class="flex gap-3">
+      {{ form.submit(class_='btn-primary') }}
+      <a href="{{ url_for('instructor.curriculum', course_id=course.id) }}" class="btn-outline">Cancel</a>
+    </div>
+  </form>
+{% endblock %}

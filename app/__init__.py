@@ -1,3 +1,4 @@
+import re
 from flask import Flask
 from config import Config
 from app.extensions import db, migrate,csrf, login_manager, mail
@@ -14,13 +15,24 @@ def create_app(config_class=Config):
     csrf.init_app(app)
     
 
-    from app.main.routes import main as main_blueprint
-    app.register_blueprint(main_blueprint)
-    from app.auth.routes import auth as auth_blueprint
-    app.register_blueprint(auth_blueprint)
-    from app.admin.routes import admin as admin_blueprint
-    app.register_blueprint(admin_blueprint, url_prefix="/admin")
+    from app.main.routes import main
+    app.register_blueprint(main)
+    from app.auth.routes import auth
+    app.register_blueprint(auth)
+    from app.admin.routes import admin
+    app.register_blueprint(admin, url_prefix="/admin")
+    from app.student.routes import student
+    app.register_blueprint(student, url_prefix="/student")
+    from app.instructor.routes import instructor
+    app.register_blueprint(instructor, url_prefix="/instructor")
     from app.commands import register_commands
     register_commands(app)  
 
+    @app.template_filter("initials")
+    def initials(value):
+        words = [w for w in re.split(r"[\s._-]+", value or "") if w]
+        if len(words) >= 2:
+            return (words[0][0] + words[1][0]).upper()
+        return (words[0][:2] if words else "?").upper()
+    
     return app

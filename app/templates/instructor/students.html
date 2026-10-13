@@ -1,0 +1,39 @@
+{% extends "instructor/layout.html" %}
+{% from "components/_course_tabs.html" import course_header, course_tabs %}
+{% from "components/_avatar.html" import avatar %}
+
+{% block title %}Students | {{ course.title }}{% endblock %}
+
+{% block instructor_content %}
+  {{ course_header(course) }}
+  {{ course_tabs(course, 'students') }}
+
+  <p class="mt-6 text-sm text-gray-500">{{ enrollments | length }} learner{{ '' if enrollments | length == 1 else 's' }} enrolled</p>
+
+  <div class="card mt-3 divide-y divide-gray-100">
+    {% for e in enrollments %}
+      {% set percent = e.progress_percent %}
+      <div class="flex flex-wrap items-center gap-4 px-5 py-4">
+        {{ avatar(e.student) }}
+        <div class="min-w-0 flex-1">
+          <p class="truncate font-semibold">{{ e.student.username }}</p>
+          <p class="text-xs text-gray-500">Enrolled {{ e.enrolled_at.strftime('%b %d, %Y') }}</p>
+        </div>
+        <div class="w-40">
+          <div class="h-2 w-full rounded-full bg-gray-200">
+            <!-- <div class="h-2 rounded-full bg-brand-600" style="width: {{ percent }}%"></div> -->
+          </div>
+          <p class="mt-1 text-xs text-gray-500">{{ percent }}% complete</p>
+        </div>
+        {% if percent == 100 %}<span class="rounded-full bg-brand-50 px-2.5 py-1 text-xs font-semibold text-brand-700">Finished</span>{% endif %}
+      </div>
+    {% else %}
+      <div class="px-5 py-14 text-center">
+        <p class="font-semibold">No learners yet</p>
+        <p class="mt-1 text-sm text-gray-500">
+          {{ 'Share your course page to get your first learners.' if course.is_published else 'Publish the course so learners can enroll.' }}
+        </p>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}

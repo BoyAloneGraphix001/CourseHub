@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% from "components/_form_field.html" import render_field %}
+
+{% block title %}Report a course | CourseHub{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-lg">
+  <a href="{{ url_for('main.course_detail', course_id=course.id) }}"
+     class="text-sm text-gray-500 hover:text-brand-600">&larr; Back to course</a>
+
+  <div class="card mt-4 p-8">
+    <h1 class="text-2xl font-bold tracking-tight">Report this course</h1>
+    <p class="mt-1 text-sm text-gray-600">
+      Tell us what's wrong with <span class="font-medium text-gray-900">{{ course.title }}</span>.
+      An admin will review it.
+    </p>
+
+    <form method="post" novalidate class="mt-6">
+      {{ form.hidden_tag() }}
+      {{ render_field(form.reason, rows=5, placeholder='For example: the content is misleading, copied, or inappropriate.') }}
+      <div class="flex gap-3">
+        {{ form.submit(class_='btn-primary') }}
+        <a href="{{ url_for('main.course_detail', course_id=course.id) }}" class="btn-outline">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

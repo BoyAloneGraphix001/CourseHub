@@ -1,0 +1,70 @@
+{% extends "instructor/layout.html" %}
+{% from "components/_form_field.html" import render_field %}
+{% from "components/_course_tabs.html" import course_header, course_tabs %}
+
+{% block title %}{{ 'Edit course' if course else 'New course' }} | CourseHub{% endblock %}
+
+{% block instructor_content %}
+  {% if course %}
+    {{ course_header(course) }}
+    {{ course_tabs(course, 'details') }}
+  {% else %}
+    <a href="{{ url_for('instructor.courses') }}" class="text-sm text-gray-500 hover:text-brand-600">&larr; My courses</a>
+    <h1 class="mt-1 text-3xl font-bold tracking-tight">New course</h1>
+    <p class="mt-1 text-gray-600">It starts as a draft. You choose when to publish it.</p>
+  {% endif %}
+
+  <form method="post" enctype="multipart/form-data" novalidate class="card mt-6 p-6"
+        action="{{ url_for('instructor.edit_course', course_id=course.id) if course else url_for('instructor.new_course') }}">
+    {{ form.hidden_tag() }}
+
+    <div class="mb-5">
+      <label for="{{ form.thumbnail.id }}" class="mb-1.5 block text-sm font-medium">Course thumbnail</label>
+      <div class="flex flex-wrap items-center gap-4">
+        {% if course and course.thumbnail %}
+          <img src="{{ url_for('static', filename='uploads/course_thumbnails/' ~ course.thumbnail) }}"
+               alt="" class="aspect-video w-40 rounded-lg object-cover">
+        {% else %}
+          <div class="flex aspect-video w-40 items-center justify-center rounded-lg bg-brand-50 text-3xl text-brand-600">📘</div>
+        {% endif %}
+        <div class="min-w-0">
+          <input type="file" id="{{ form.thumbnail.id }}" name="{{ form.thumbnail.name }}" accept="image/png,image/jpeg,image/webp"
+                 class="block w-full text-sm text-gray-600 file:mr-3 file:rounded-lg file:border file:border-gray-300 file:bg-white file:px-3 file:py-2 file:text-sm file:font-medium hover:file:bg-gray-50">
+          <p class="mt-1.5 text-xs text-gray-500">A 16:9 image works best. PNG, JPG or WebP.</p>
+          {% if form.thumbnail.errors %}<p class="mt-1.5 text-sm text-red-700">{{ form.thumbnail.errors[0] }}</p>{% endif %}
+        </div>
+      </div>
+    </div>
+
+    {{ render_field(form.title, placeholder='For example: Python for Absolute Beginners', autofocus=not course) }}
+
+    <div class="grid gap-x-4 sm:grid-cols-2">
+      {{ render_field(form.category_id) }}
+      {{ render_field(form.level) }}
+    </div>
+
+    {{ render_field(form.description, rows=6, placeholder='What will learners be able to do after this course?') }}
+
+    <div class="flex gap-3">
+      {{ form.submit(class_='btn-primary') }}
+      <a href="{{ url_for('instructor.courses') }}" class="btn-outline">Cancel</a>
+    </div>
+  </form>
+
+  {% if course %}
+    <div class="card mt-6 border-red-200 p-6">
+      <h2 class="font-semibold text-red-700">Delete this course</h2>
+      <p class="mt-1 text-sm text-gray-600">
+        This removes the course and all its lessons for good.
+        {% if course.enrollment_count %}Courses with learners enrolled can't be deleted. Unpublish it instead.{% endif %}
+      </p>
+      {% if not course.enrollment_count %}
+        <form method="post" action="{{ url_for('instructor.delete_course', course_id=course.id) }}" class="mt-4"
+              data-confirm="Delete this course and all its lessons? This can't be undone.">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="btn border border-red-200 bg-white text-red-700 hover:bg-red-50">Delete course</button>
+        </form>
+      {% endif %}
+    </div>
+  {% endif %}
+{% endblock %}

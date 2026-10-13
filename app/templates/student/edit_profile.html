@@ -1,0 +1,55 @@
+{% extends "student/layout.html" %}
+{% from "components/_form_field.html" import render_field, render_password %}
+{% from "components/_avatar.html" import avatar %}
+
+{% block title %}Edit profile | CourseHub{% endblock %}
+
+{% block student_content %}
+  <h1 class="text-3xl font-bold tracking-tight">Edit profile</h1>
+  <p class="mt-1 text-gray-600">Update how you appear on CourseHub.</p>
+
+  {# ───────── Details ───────── #}
+  <form method="post" enctype="multipart/form-data" novalidate class="card mt-6 p-6"
+        action="{{ url_for('student.edit_profile') }}">
+    {{ form.hidden_tag() }}
+
+    <div class="mb-5 flex items-center gap-4">
+      {{ avatar(current_user, 'h-16 w-16 text-xl') }}
+      <div class="min-w-0">
+        <label for="{{ form.picture.id }}" class="mb-1.5 block text-sm font-medium">Profile picture</label>
+        <input type="file" id="{{ form.picture.id }}" name="{{ form.picture.name }}" accept="image/png,image/jpeg,image/webp"
+               class="block w-full text-sm text-gray-600 file:mr-3 file:rounded-lg file:border file:border-gray-300 file:bg-white file:px-3 file:py-2 file:text-sm file:font-medium hover:file:bg-gray-50">
+        {% if form.picture.errors %}<p class="mt-1.5 text-sm text-red-700">{{ form.picture.errors[0] }}</p>{% endif %}
+      </div>
+    </div>
+
+    {{ render_field(form.username, autocomplete='username') }}
+
+    <div class="mb-4">
+      <label class="mb-1.5 block text-sm font-medium">Email</label>
+      <input value="{{ current_user.email }}" disabled
+             class="w-full rounded-lg border border-gray-300 bg-gray-50 px-3.5 py-2.5 text-sm text-gray-500">
+    </div>
+
+    {% if current_user.is_instructor %}
+      {{ render_field(form.headline, placeholder='Software developer and teacher') }}
+    {% endif %}
+
+    {{ render_field(form.bio, rows=4) }}
+
+    <div class="flex gap-3">
+      {{ form.submit(class_='btn-primary') }}
+      <a href="{{ url_for('student.profile') }}" class="btn-outline">Cancel</a>
+    </div>
+  </form>
+
+  {# ───────── Password ───────── #}
+  <form method="post" novalidate class="card mt-6 p-6" action="{{ url_for('student.change_password') }}">
+    {{ password_form.hidden_tag() }}
+    <h2 class="mb-4 font-semibold">Change password</h2>
+    {{ render_password(password_form.current_password) }}
+    {{ render_password(password_form.new_password) }}
+    {{ render_password(password_form.confirm) }}
+    {{ password_form.submit(class_='btn-outline') }}
+  </form>
+{% endblock %}

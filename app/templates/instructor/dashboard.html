@@ -1,0 +1,49 @@
+{% extends "instructor/layout.html" %}
+
+{% block title %}Instructor dashboard | CourseHub{% endblock %}
+
+{% block instructor_content %}
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <h1 class="text-3xl font-bold tracking-tight">Dashboard</h1>
+      <p class="mt-1 text-gray-600">How your courses are doing.</p>
+    </div>
+    <a href="{{ url_for('instructor.new_course') }}" class="btn-primary">New course</a>
+  </div>
+
+  <div class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    {% for label, value in [('Courses', stats.courses), ('Published', stats.published), ('Learners', stats.learners), ('Lessons', stats.lessons)] %}
+      <div class="card p-5">
+        <p class="text-sm text-gray-500">{{ label }}</p>
+        <p class="mt-1 text-3xl font-bold text-brand-700">{{ value }}</p>
+      </div>
+    {% endfor %}
+  </div>
+
+  {% if not stats.courses %}
+    <div class="card mt-8 border-brand-100 bg-brand-50 p-6">
+      <h2 class="text-lg font-semibold">Publish your first course</h2>
+      <ol class="mt-3 space-y-2 text-sm text-gray-700">
+        <li>1. Create a course with a title, category and level.</li>
+        <li>2. Add sections and lessons with video links or text.</li>
+        <li>3. Press Publish and learners can enroll.</li>
+      </ol>
+      <a href="{{ url_for('instructor.new_course') }}" class="btn-primary mt-5">Create a course</a>
+    </div>
+  {% endif %}
+
+  <div class="mt-10 flex items-end justify-between">
+    <h2 class="text-lg font-semibold">Latest enrollments</h2>
+    <a href="{{ url_for('instructor.courses') }}" class="text-sm font-semibold text-brand-600 hover:underline">My courses</a>
+  </div>
+  <div class="card mt-3 divide-y divide-gray-100">
+    {% for e in recent %}
+      <div class="flex items-center justify-between gap-3 px-5 py-3 text-sm">
+        <p class="min-w-0 truncate"><span class="font-semibold">{{ e.student.username }}</span> enrolled in {{ e.course.title }}</p>
+        <span class="shrink-0 text-gray-500">{{ e.enrolled_at.strftime('%b %d') }}</span>
+      </div>
+    {% else %}
+      <p class="px-5 py-10 text-center text-sm text-gray-500">No one has enrolled yet. Learners show up here once they do.</p>
+    {% endfor %}
+  </div>
+{% endblock %}

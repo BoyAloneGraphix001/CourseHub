@@ -18,7 +18,7 @@
 //     document.body.style.overflow = open && !matchMedia('(min-width: 1024px)').matches ? 'hidden' : '';
 //   }
 
-//   /* ---------- Click handlers (delegated) ---------- */
+  /* ---------- Click handlers (delegated) ---------- */
 //   document.addEventListener('click', async (e) => {
 //     // sidebar open/close
 //     if (e.target.closest('[data-sidebar-toggle]')) {
@@ -33,20 +33,20 @@
 //       return;
 //     }
 
-//     // dismiss flash message
-//     const dismiss = e.target.closest('[data-dismiss]');
-//     if (dismiss) { dismiss.closest('[data-flash]')?.remove(); return; }
+    // dismiss flash message
+    // const dismiss = e.target.closest('[data-dismiss]');
+    // if (dismiss) { dismiss.closest('[data-flash]')?.remove(); return; }
 
-//     // show/hide password
-//     const toggle = e.target.closest('[data-toggle-password]');
-//     if (toggle) {
-//       const input = $(toggle.dataset.togglePassword);
-//       if (!input) return;
-//       const show = input.type === 'password';
-//       input.type = show ? 'text' : 'password';
-//       toggle.textContent = show ? 'Hide' : 'Show';
-//       return;
-//     }
+    // // show/hide password
+    // const toggle = e.target.closest('[data-toggle-password]');
+    // if (toggle) {
+    //   const input = $(toggle.dataset.togglePassword);
+    //   if (!input) return;
+    //   const show = input.type === 'password';
+    //   input.type = show ? 'text' : 'password';
+    //   toggle.textContent = show ? 'Hide' : 'Show';
+    //   return;
+    // }
 
 //     // mark lesson complete without reloading the page
 //     const complete = e.target.closest('[data-complete-url]');
@@ -76,7 +76,7 @@
 //     if (e.key === 'Escape' && sidebar?.dataset.open === 'true') setSidebar(false);
 //   });
 
-//   /* ---------- Auto-dismiss success/info flash messages ---------- */
+  /* ---------- Auto-dismiss success/info flash messages ---------- */
 //   $$('[data-flash]').forEach((el) => {
 //     if (/bg-(green|blue)-50/.test(el.className)) setTimeout(() => el.remove(), 6000);
 //   });

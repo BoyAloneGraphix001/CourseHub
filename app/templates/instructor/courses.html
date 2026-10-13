@@ -1,0 +1,56 @@
+{% extends "instructor/layout.html" %}
+
+{% block title %}My courses | CourseHub{% endblock %}
+
+{% block instructor_content %}
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <h1 class="text-3xl font-bold tracking-tight">My courses</h1>
+    <a href="{{ url_for('instructor.new_course') }}" class="btn-primary">New course</a>
+  </div>
+
+  <div class="mt-6 flex flex-wrap gap-2">
+    {% set chip = 'rounded-full border px-3.5 py-1.5 text-sm transition' %}
+    {% set on  = 'border-brand-600 bg-brand-50 font-semibold text-brand-700' %}
+    {% set off = 'border-gray-300 bg-white text-gray-700 hover:border-brand-500' %}
+    {% for value, label in [('', 'All'), ('published', 'Published'), ('draft', 'Drafts')] %}
+      <a href="{{ url_for('instructor.courses', status=value or None) }}"
+         class="{{ chip }} {{ on if status == value else off }}">{{ label }}</a>
+    {% endfor %}
+  </div>
+
+  <div class="card mt-6 divide-y divide-gray-100">
+    {% for c in courses %}
+      <div class="flex flex-wrap items-center gap-3 px-5 py-4">
+        <div class="min-w-0 flex-1">
+          <a href="{{ url_for('instructor.edit_course', course_id=c.id) }}"
+             class="block truncate font-semibold hover:text-brand-600">{{ c.title }}</a>
+          <p class="truncate text-sm text-gray-500">
+            {% if c.category %}{{ c.category.name }} &middot; {% endif %}
+            {{ c.lesson_count }} lesson{{ '' if c.lesson_count == 1 else 's' }} &middot;
+            {{ c.enrollment_count }} enrolled
+          </p>
+        </div>
+
+        <span class="rounded-full px-2.5 py-1 text-xs font-semibold {{ 'bg-brand-50 text-brand-700' if c.is_published else 'bg-gray-100 text-gray-600' }}">
+          {{ 'Published' if c.is_published else 'Draft' }}
+        </span>
+
+        <a href="{{ url_for('instructor.curriculum', course_id=c.id) }}" class="btn-outline">Curriculum</a>
+        <a href="{{ url_for('instructor.edit_course', course_id=c.id) }}" class="btn-outline">Edit</a>
+
+        <form method="post" action="{{ url_for('instructor.toggle_publish', course_id=c.id) }}"
+              data-confirm="{{ 'Unpublish this course? Learners will no longer see it.' if c.is_published else 'Publish this course for everyone?' }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="next" value="{{ request.full_path }}">
+          <button class="{{ 'btn-outline' if c.is_published else 'btn-primary' }}">{{ 'Unpublish' if c.is_published else 'Publish' }}</button>
+        </form>
+      </div>
+    {% else %}
+      <div class="px-5 py-14 text-center">
+        <p class="font-semibold">{{ 'No courses yet' if not status else 'No courses here' }}</p>
+        <p class="mt-1 text-sm text-gray-500">Create your first course to get started.</p>
+        <a href="{{ url_for('instructor.new_course') }}" class="btn-primary mt-5">New course</a>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}

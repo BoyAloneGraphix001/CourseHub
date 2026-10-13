@@ -1,0 +1,10 @@
+{% macro avatar(user, size='h-10 w-10 text-sm') %}
+  {% if user.profile_pic and user.profile_pic != 'default.jpg' %}
+    <img src="{{ url_for('static', filename='uploads/profile_pics/' ~ user.profile_pic) }}"
+         alt="" class="{{ size }} shrink-0 rounded-full object-cover">
+  {% else %}
+    <span class="flex {{ size }} shrink-0 items-center justify-center rounded-full bg-brand-600 font-semibold text-white">
+      {{ user.username | initials }}
+    </span>
+  {% endif %}
+{% endmacro %}

@@ -7,6 +7,7 @@ from app.extensions import db, login_manager
 from app.models import Course, Category, Section, Lesson, Enrollment
 from app.instructor.forms import CourseForm, SectionForm, LessonForm
 from app.utils import save_picture, delete_picture, to_embed_url, is_safe_redirect
+from werkzeug.datastructures import FileStorage
 
 instructor = Blueprint("instructor", __name__)
 
@@ -80,9 +81,9 @@ def swap(items, obj, direction):
 
 
 def apply_thumbnail(course, file):
-    """True on success, or when no file was sent."""
-    if not file:
-        return True
+    """True on success, or when no new file was sent."""
+    if not isinstance(file, FileStorage) or not file.filename:
+        return True                       # nothing new uploaded, keep the current image
     try:
         filename = save_picture(file, "course_thumbnails", size=(1280, 720))
     except (OSError, ValueError):

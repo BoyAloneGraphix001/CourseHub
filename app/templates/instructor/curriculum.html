@@ -25,14 +25,14 @@
     {{ section_form.hidden_tag() }}
     <label for="new-section" class="sr-only">New section title</label>
     <input id="new-section" name="title" required minlength="2" maxlength="150" placeholder="New section title, for example Getting started"
-           class="min-w-[220px] flex-1 rounded-lg border border-gray-300 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30">
+           class="min-w-220px flex-1 rounded-lg border border-gray-300 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30">
     <button class="btn-primary">Add section</button>
   </form>
 
   {% for section in course.sections %}
     <div class="card mt-5">
       <div class="flex flex-wrap items-center gap-2 border-b border-gray-100 px-4 py-3">
-        <form method="post" action="{{ url_for('instructor.rename_section', section_id=section.id) }}" class="flex min-w-[200px] flex-1 gap-2">
+        <form method="post" action="{{ url_for('instructor.rename_section', section_id=section.id) }}" class="flex min-w-200px flex-1 gap-2">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <label for="sec-{{ section.id }}" class="sr-only">Section title</label>
           <input id="sec-{{ section.id }}" name="title" value="{{ section.title }}" required minlength="2" maxlength="150"

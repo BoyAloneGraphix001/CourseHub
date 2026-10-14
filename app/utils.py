@@ -26,7 +26,10 @@ def save_picture(file, folder, size=(400, 400)):
     if ext in (".jpg", ".jpeg") and img.mode in ("RGBA", "P"):
         img = img.convert("RGB")                     # JPEG can't store transparency
     img.save(os.path.join(folder_path, filename))
+    if not hasattr(file, "filename") or not file.filename:
+        raise ValueError("No file was uploaded.")                       #check this out later
     return filename
+
 
 
 def delete_picture(filename, folder, keep=("default.jpg",)):

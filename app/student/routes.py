@@ -7,6 +7,7 @@ from app.models import (Course, Section, Lesson, Enrollment, LessonProgress,
                         ProfileUpdate, Report)
 from app.student.forms import ProfileForm, ChangePasswordForm, ReportForm
 from app.utils import get_adjacent_lessons, save_picture, delete_picture
+from werkzeug.datastructures import FileStorage
 
 student = Blueprint("student", __name__)
 
@@ -133,6 +134,12 @@ def profile():
 @login_required
 def edit_profile():
     form = ProfileForm(obj=current_user)
+    picture = form.picture.data
+    if isinstance(picture, FileStorage) and picture.filename:
+        try:
+            filename = save_picture(picture, "profile_pics", size=(400, 400))
+        except (OSError, ValueError):
+            ...
     if form.validate_on_submit():
         changes = []
         username = form.username.data.strip()

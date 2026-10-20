@@ -45,6 +45,7 @@ def resume_lesson(course, done_ids):
 @student.route("/dashboard")
 @login_required
 def dashboard():
+    title = "Dashboard || CourseHub"
     enrollments = (
         Enrollment.query.filter_by(student_id=current_user.id)
         .options(
@@ -61,13 +62,14 @@ def dashboard():
             cont_enrollment, cont_lesson = e, resume_lesson(e.course, e.completed_lesson_ids)
             break
     return render_template("student/dashboard.html", enrollments=enrollments,
-                           cont_enrollment=cont_enrollment, cont_lesson=cont_lesson)
+                           cont_enrollment=cont_enrollment, cont_lesson=cont_lesson, title=title)
 
 
 # ───────────── Enrol ─────────────
 @student.route("/enroll/<int:course_id>", methods=["POST"])
 @login_required
 def enroll(course_id):
+    title = "Enroll || CourseHub"
     course = Course.query.filter_by(id=course_id, is_published=True).first_or_404()
     if course.instructor_id == current_user.id:
         flash("This is your own course.", "info")
@@ -75,7 +77,7 @@ def enroll(course_id):
         db.session.add(Enrollment(student_id=current_user.id, course_id=course.id))
         db.session.commit()
         flash(f"You are now enrolled in {course.title}. Your lessons are unlocked.", "success")
-    return redirect(url_for("main.course_detail", course_id=course.id))
+    return redirect(url_for("main.course_detail", course_id=course.id), title=title)
 
 
 # ───────────── Course player ─────────────
@@ -125,14 +127,16 @@ def toggle_complete(lesson_id):
 @student.route("/profile")
 @login_required
 def profile():
+    title = "Profile || CourseHub"
     updates = (ProfileUpdate.query.filter_by(user_id=current_user.id)
                .order_by(ProfileUpdate.created_at.desc()).limit(20).all())
-    return render_template("student/profile.html", updates=updates)
+    return render_template("student/profile.html", updates=updates, title=title)
 
 
 @student.route("/profile/edit", methods=["GET", "POST"])
 @login_required
 def edit_profile():
+    title = "Edit Profile || CourseHub"
     form = ProfileForm(obj=current_user)
     picture = form.picture.data
     if isinstance(picture, FileStorage) and picture.filename:
@@ -178,7 +182,7 @@ def edit_profile():
         return redirect(url_for("student.profile"))
 
     return render_template("student/edit_profile.html", form=form,
-                           password_form=ChangePasswordForm())
+                           password_form=ChangePasswordForm(), title=title)
 
 
 @student.route("/profile/password", methods=["POST"])

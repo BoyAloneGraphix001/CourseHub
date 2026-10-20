@@ -28,7 +28,7 @@
                   lg:overflow-visible lg:bg-transparent lg:p-0 lg:shadow-none">
       <div class="card p-4">
 
-        <button type="button" data-instructor-menu class="mb-3 text-sm text-gray-500 lg:hidden">&times; Close menu</button>
+        <button type="button" data-instructor-menu class="mb-3 text-sm text-gray-500 lg:hidden cursor-pointer">&times; Close menu</button>
 
         <div class="flex items-center gap-3">
           {{ avatar(current_user) }}
@@ -71,7 +71,7 @@
     <section class="min-w-0">
       <div class="mb-5 flex items-center gap-3 lg:hidden">
         <button type="button" data-instructor-menu aria-controls="instructor-sidebar" aria-expanded="false"
-                aria-label="Open menu" class="btn-outline px-3! text-lg leading-none">&#9776;</button>
+                aria-label="Open menu" class="btn-outline px-3! text-lg leading-none cursor-pointer">&#9776;</button>
         <span class="font-semibold">{{ ns.label }}</span>
       </div>
 

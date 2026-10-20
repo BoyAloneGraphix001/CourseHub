@@ -45,6 +45,21 @@
   padding-inline: 1rem;
 }
 
+.progress-bar {
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 0.5rem;
+  overflow: hidden;
+  border: 0;
+  border-radius: 9999px;
+  background-color: #e5e7eb;
+  color: #167d73;
+}
+.progress-bar::-webkit-progress-bar { background-color: #e5e7eb; }
+.progress-bar::-webkit-progress-value { background-color: currentColor; border-radius: 9999px; }
+.progress-bar::-moz-progress-bar { background-color: currentColor; }
+
 /* Scroll reveal (class added by index.js) */
 #app .rv {
   opacity: 0;

@@ -20,9 +20,7 @@
           <p class="text-xs text-gray-500">Enrolled {{ e.enrolled_at.strftime('%b %d, %Y') }}</p>
         </div>
         <div class="w-40">
-          <div class="h-2 w-full rounded-full bg-gray-200">
-            <!-- <div class="h-2 rounded-full bg-brand-600" style="width: {{ percent }}%"></div> -->
-          </div>
+          <progress class="progress-bar" value="{{ percent }}" max="100" aria-label="{{ e.student.username }} course progress"></progress>
           <p class="mt-1 text-xs text-gray-500">{{ percent }}% complete</p>
         </div>
         {% if percent == 100 %}<span class="rounded-full bg-brand-50 px-2.5 py-1 text-xs font-semibold text-brand-700">Finished</span>{% endif %}

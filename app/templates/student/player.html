@@ -17,9 +17,7 @@
     {% if enrollment %}
       <div class="w-48">
         <p class="mb-1 text-right text-xs text-gray-500">{{ percent }}% complete</p>
-        <div class="h-2 w-full rounded-full bg-gray-200">
-          <!-- <div class="grow h-2 rounded-full bg-brand-600" style="width: {{ percent }}%"></div> -->
-        </div>
+        <progress class="progress-bar" value="{{ percent }}" max="100" aria-label="Course progress"></progress>
       </div>
     {% else %}
       <span class="rounded-full bg-yellow-50 px-3 py-1 text-xs font-semibold text-yellow-800">Preview mode</span>

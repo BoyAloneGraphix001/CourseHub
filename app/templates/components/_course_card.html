@@ -23,9 +23,7 @@
 
     {% if progress is defined and progress is not none %}
       <div class="mt-4">
-        <div class="h-2 w-full rounded-full bg-gray-200">
-          <!-- <div class="grow h-2 rounded-full bg-brand-600" style="width: {{ progress }}%"></div> -->
-        </div>
+        <progress class="progress-bar" value="{{ progress }}" max="100" aria-label="Course progress"></progress>
         <p class="mt-1.5 text-xs text-gray-500">{{ progress }}% complete</p>
       </div>
     {% endif %}

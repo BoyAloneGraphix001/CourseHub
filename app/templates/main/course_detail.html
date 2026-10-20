@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% from "components/_avatar.html" import avatar %}
-{% block title %}{{ course.title }} | CourseHub{% endblock %}
 
 {% block content %}
   <a href="{{ url_for('main.catalog') }}" class="text-sm text-gray-500 hover:text-brand-600">&larr; Back to courses</a>
@@ -127,9 +126,7 @@
 
         {% if enrollment %}
           <div class="mt-4">
-            <div class="h-2 w-full rounded-full bg-gray-200">
-              <!-- <div class="grow h-2 rounded-full bg-brand-600" data-progress-bar style="width: {{ enrollment.progress_percent }}%"></div> -->
-            </div>
+            <progress class="progress-bar" value="{{ enrollment.progress_percent }}" max="100" aria-label="Course progress"></progress>
             <p class="mt-1.5 text-xs text-gray-500" data-progress-text>{{ enrollment.progress_percent }}% complete</p>
           </div>
         {% endif %}

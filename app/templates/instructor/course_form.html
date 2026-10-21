@@ -2,7 +2,6 @@
 {% from "components/_form_field.html" import render_field %}
 {% from "components/_course_tabs.html" import course_header, course_tabs %}
 
-{% block title %}{{ 'Edit course' if course else 'New course' }} | CourseHub{% endblock %}
 
 {% block instructor_content %}
   {% if course %}

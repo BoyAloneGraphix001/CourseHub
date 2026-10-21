@@ -115,9 +115,10 @@ def dashboard():
     return render_template("instructor/dashboard.html", stats=stats, recent=recent)
 
 
-# ───────────── Courses ─────────────
+# Courses 
 @instructor.route("/courses")
 def courses():
+    title = "Instructor Courses || CourseHub"
     status = request.args.get("status", "")
     query = (Course.query.filter_by(instructor_id=current_user.id)
              .options(joinedload(Course.category), selectinload(Course.enrollments),
@@ -127,11 +128,12 @@ def courses():
     elif status == "draft":
         query = query.filter(Course.is_published.is_(False))
     rows = query.order_by(Course.created_at.desc()).all()
-    return render_template("instructor/courses.html", courses=rows, status=status)
+    return render_template("instructor/courses.html", courses=rows, status=status, title=title)
 
-
+# Add New Courses 
 @instructor.route("/courses/new", methods=["GET", "POST"])
 def new_course():
+    title = "Instructor Add-Courses || CourseHub"
     form = CourseForm()
     form.category_id.choices = category_choices()
     if form.validate_on_submit():
@@ -148,11 +150,12 @@ def new_course():
             db.session.commit()
             flash("Course created as a draft. Add some lessons next.", "success")
             return redirect(url_for("instructor.curriculum", course_id=course.id))
-    return render_template("instructor/course_form.html", form=form, course=None)
+    return render_template("instructor/course_form.html", form=form, course=None, title=title)
 
-
+# Edit Courses
 @instructor.route("/courses/<int:course_id>/edit", methods=["GET", "POST"])
 def edit_course(course_id):
+    title = "Instructor Edit-Courses || CourseHub"
     course = own_course_or_404(course_id)
     form = CourseForm(obj=course)
     form.category_id.choices = category_choices()
@@ -169,9 +172,9 @@ def edit_course(course_id):
             flash("Course details saved.", "success")
             return redirect(url_for("instructor.edit_course", course_id=course.id))
         db.session.rollback()
-    return render_template("instructor/course_form.html", form=form, course=course)
+    return render_template("instructor/course_form.html", form=form, course=course, title=title)
 
-
+# Publish Courses 
 @instructor.route("/courses/<int:course_id>/publish", methods=["POST"])
 def toggle_publish(course_id):
     course = own_course_or_404(course_id)
@@ -183,7 +186,7 @@ def toggle_publish(course_id):
         flash(f"'{course.title}' is now {'published' if course.is_published else 'unpublished'}.", "success")
     return back(url_for("instructor.courses"))
 
-
+# Delete Courses 
 @instructor.route("/courses/<int:course_id>/delete", methods=["POST"])
 def delete_course(course_id):
     course = own_course_or_404(course_id)

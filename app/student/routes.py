@@ -69,7 +69,6 @@ def dashboard():
 @student.route("/enroll/<int:course_id>", methods=["POST"])
 @login_required
 def enroll(course_id):
-    title = "Enroll || CourseHub"
     course = Course.query.filter_by(id=course_id, is_published=True).first_or_404()
     if course.instructor_id == current_user.id:
         flash("This is your own course.", "info")
@@ -77,7 +76,7 @@ def enroll(course_id):
         db.session.add(Enrollment(student_id=current_user.id, course_id=course.id))
         db.session.commit()
         flash(f"You are now enrolled in {course.title}. Your lessons are unlocked.", "success")
-    return redirect(url_for("main.course_detail", course_id=course.id), title=title)
+    return redirect(url_for("main.course_detail", course_id=course.id))
 
 
 # ───────────── Course player ─────────────

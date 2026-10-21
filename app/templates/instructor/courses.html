@@ -42,7 +42,7 @@
               data-confirm="{{ 'Unpublish this course? Learners will no longer see it.' if c.is_published else 'Publish this course for everyone?' }}">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <input type="hidden" name="next" value="{{ request.full_path }}">
-          <button class="{{ 'btn-outline' if c.is_published else 'btn-primary' }}">{{ 'Unpublish' if c.is_published else 'Publish' }}</button>
+          <button class="{{ 'btn-outline cursor-pointer' if c.is_published else 'btn-primary cursor-pointer' }}">{{ 'Unpublish' if c.is_published else 'Publish' }}</button>
         </form>
       </div>
     {% else %}

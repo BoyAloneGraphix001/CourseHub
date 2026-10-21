@@ -39,6 +39,7 @@ def back(default):
 # ───────────── Overview ─────────────
 @admin.route("/")
 def dashboard():
+    title = "Admin overview || CourseHub"
     stats = {
         "users": User.query.count(),
         "instructors": User.query.filter_by(is_instructor=True).count(),
@@ -53,7 +54,7 @@ def dashboard():
                     .filter_by(status="open")
                     .order_by(Report.created_at.desc()).limit(5).all())
     return render_template("admin/dashboard.html", stats=stats,
-                           recent_users=recent_users, open_reports=open_reports)
+                           recent_users=recent_users, open_reports=open_reports, title=title)
 
 
 # ───────────── Users ─────────────
@@ -169,9 +170,10 @@ def unpublish_reported(report_id):
     return back(url_for("admin.reports"))
 
 
-# ───────────── Categories ─────────────
+# Categories 
 @admin.route("/categories", methods=["GET", "POST"])
 def categories():
+    title = "Admin categories || CourseHub"
     form = CategoryForm()
     if form.validate_on_submit():
         db.session.add(Category(name=form.name.data.strip()))
@@ -183,9 +185,9 @@ def categories():
             .outerjoin(Course, Course.category_id == Category.id)
             .group_by(Category.id)
             .order_by(Category.name).all())
-    return render_template("admin/categories.html", form=form, rows=rows)
+    return render_template("admin/categories.html", form=form, rows=rows, title=title)
 
-
+# Rename Category 
 @admin.route("/categories/<int:category_id>/rename", methods=["POST"])
 def rename_category(category_id):
     category = db.get_or_404(Category, category_id)
@@ -198,7 +200,7 @@ def rename_category(category_id):
         flash(form.name.errors[0] if form.name.errors else "Couldn't rename that category.", "danger")
     return redirect(url_for("admin.categories"))
 
-
+# Delete Category
 @admin.route("/categories/<int:category_id>/delete", methods=["POST"])
 def delete_category(category_id):
     category = db.get_or_404(Category, category_id)

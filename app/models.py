@@ -59,7 +59,7 @@ class User(db.Model, UserMixin):
 
 
 
-# ───────────────────────── Courses ─────────────────────────
+# ───────────────────────── Courses ─────────────────────────   
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
@@ -82,8 +82,6 @@ class Course(db.Model):
                                order_by='Section.position', cascade='all, delete-orphan')
     enrollments = db.relationship('Enrollment', backref='course', lazy=True,
                                   cascade='all, delete-orphan')
-    quizzes = db.relationship('Quiz', backref='course', lazy=True,
-                              cascade='all, delete-orphan')
 
     @property
     def lesson_count(self):
@@ -148,42 +146,6 @@ class LessonProgress(db.Model):
     lesson = db.relationship('Lesson',
                              backref=db.backref('progress', cascade='all, delete-orphan'))
 
-
-# ───────────────────────── Quizzes ─────────────────────────
-class Quiz(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
-    title = db.Column(db.String(150), nullable=False)
-    pass_mark = db.Column(db.Integer, default=50)          # percent
-
-    questions = db.relationship('Question', backref='quiz', lazy=True,
-                                cascade='all, delete-orphan')
-    attempts = db.relationship('QuizAttempt', backref='quiz', lazy=True,
-                               cascade='all, delete-orphan')
-
-
-class Question(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    quiz_id = db.Column(db.Integer, db.ForeignKey('quiz.id'), nullable=False)
-    text = db.Column(db.Text, nullable=False)
-
-    options = db.relationship('Option', backref='question', lazy=True,
-                              cascade='all, delete-orphan')
-
-
-class Option(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    question_id = db.Column(db.Integer, db.ForeignKey('question.id'), nullable=False)
-    text = db.Column(db.String(300), nullable=False)
-    is_correct = db.Column(db.Boolean, default=False)
-
-
-class QuizAttempt(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    quiz_id = db.Column(db.Integer, db.ForeignKey('quiz.id'), nullable=False)
-    student_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    score = db.Column(db.Integer)                          # percent
-    taken_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
 
 
 # ───────────────────────── Moderation ─────────────────────────

@@ -1,7 +1,6 @@
 {% extends "admin/layout.html" %}
 {% from "components/_pagination.html" import render_pagination %}
 {% from "components/_avatar.html" import avatar %}
-{% block title %}Users | CourseHub Admin{% endblock %}
 
 {% block admin_content %}
   <h1 class="text-3xl font-bold tracking-tight">Users</h1>
@@ -51,9 +50,9 @@
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="next" value="{{ request.full_path }}">
             {% if u.is_active_account %}
-              <button class="btn border border-red-200 bg-white text-red-700 hover:bg-red-50">Suspend</button>
+              <button class="btn border border-red-200 bg-white text-red-700 hover:bg-red-50 cursor-pointer">Suspend</button>
             {% else %}
-              <button class="btn-outline">Restore</button>
+              <button class="btn-outline cursor-pointer">Restore</button>
             {% endif %}
           </form>
         {% endif %}

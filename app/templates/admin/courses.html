@@ -1,7 +1,7 @@
 {% extends "admin/layout.html" %}
 {% from "components/_pagination.html" import render_pagination %}
 {% from "components/_avatar.html" import avatar %}
-{% block title %}Courses | CourseHub Admin{% endblock %}
+
 
 {% block admin_content %}
   <h1 class="text-3xl font-bold tracking-tight">Courses</h1>
@@ -51,7 +51,7 @@
           {% if c.is_published %}
             <button class="btn border border-red-200 bg-white text-red-700 hover:bg-red-50">Unpublish</button>
           {% else %}
-            <button class="btn-outline">Publish</button>
+            <button class="btn-outline cursor-pointer">Publish</button>
           {% endif %}
         </form>
       </div>

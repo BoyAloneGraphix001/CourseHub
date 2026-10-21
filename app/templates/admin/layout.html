@@ -18,7 +18,7 @@
 
   <div class="grid gap-8 lg:grid-cols-[250px_1fr]">
 
-    {# ───────── Sidebar ───────── #}
+    <!-- Sidebar  -->
     <aside id="admin-sidebar" data-open="false" aria-label="Admin sidebar"
            class="hidden
                   data-[open=true]:fixed data-[open=true]:inset-y-0 data-[open=true]:left-0 data-[open=true]:z-50
@@ -49,6 +49,7 @@
           {% endfor %}
         </div>
 
+        <!-- When a nav is clicked or hoverd on  -->
         <nav class="mt-4 flex flex-col gap-1 border-t border-gray-100 pt-3" aria-label="Admin">
           {% for endpoint, icon, label in nav_items %}
             {% set active = request.endpoint == endpoint %}

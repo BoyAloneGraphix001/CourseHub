@@ -11,7 +11,6 @@ from app.utils import is_safe_redirect
 admin = Blueprint("admin", __name__)
 
 
-# ───────────── Access control: every route in this blueprint is admin-only ─────────────
 @admin.before_request
 def guard():
     if not current_user.is_authenticated:
@@ -36,7 +35,7 @@ def back(default):
     return redirect(target if is_safe_redirect(target) else default)
 
 
-# ───────────── Overview ─────────────
+# Overview / Dashboard 
 @admin.route("/")
 def dashboard():
     title = "Admin overview || CourseHub"
@@ -57,9 +56,10 @@ def dashboard():
                            recent_users=recent_users, open_reports=open_reports, title=title)
 
 
-# ───────────── Users ─────────────
+# Users 
 @admin.route("/users")
 def users():
+    title = "Admin Users || CourseHub"
     q = request.args.get("q", "").strip()
     role = request.args.get("role", "")
     page = request.args.get("page", 1, type=int)
@@ -77,9 +77,9 @@ def users():
 
     pagination = (query.order_by(User.created_at.desc())
                        .paginate(page=page, per_page=15, error_out=False))
-    return render_template("admin/users.html", pagination=pagination, q=q, role=role)
+    return render_template("admin/users.html", pagination=pagination, q=q, role=role, title=title)
 
-
+# Users toggle 
 @admin.route("/users/<int:user_id>/toggle", methods=["POST"])
 def toggle_user(user_id):
     user = db.get_or_404(User, user_id)
@@ -95,7 +95,7 @@ def toggle_user(user_id):
     return back(url_for("admin.users"))
 
 
-# ───────────── Courses ─────────────
+# Courses 
 @admin.route("/courses")
 def courses():
     q = request.args.get("q", "").strip()
@@ -119,7 +119,7 @@ def courses():
                        .paginate(page=page, per_page=15, error_out=False))
     return render_template("admin/courses.html", pagination=pagination, q=q, status=status)
 
-
+# Courses toggle 
 @admin.route("/courses/<int:course_id>/toggle", methods=["POST"])
 def toggle_course(course_id):
     course = db.get_or_404(Course, course_id)
@@ -130,9 +130,10 @@ def toggle_course(course_id):
     return back(url_for("admin.courses"))
 
 
-# ───────────── Reports ─────────────
+# Reports 
 @admin.route("/reports")
 def reports():
+    title = "Admin Reports || CourseHub"
     status = request.args.get("status", "open")
     page = request.args.get("page", 1, type=int)
 
@@ -146,9 +147,9 @@ def reports():
 
     pagination = (query.order_by(Report.created_at.desc())
                        .paginate(page=page, per_page=10, error_out=False))
-    return render_template("admin/reports.html", pagination=pagination, status=status)
+    return render_template("admin/reports.html", pagination=pagination, status=status, title=title)
 
-
+# Resolve Reports 
 @admin.route("/reports/<int:report_id>/resolve", methods=["POST"])
 def resolve_report(report_id):
     report = db.get_or_404(Report, report_id)
@@ -157,7 +158,7 @@ def resolve_report(report_id):
     flash("Report marked as resolved.", "success")
     return back(url_for("admin.reports"))
 
-
+# Unpublish Reports 
 @admin.route("/reports/<int:report_id>/unpublish", methods=["POST"])
 def unpublish_reported(report_id):
     """Take the reported course offline and close every open report on it."""

@@ -28,6 +28,7 @@ def create_app(config_class=Config):
     from app.commands import register_commands
     register_commands(app)  
 
+
     @app.template_filter("initials")
     def initials(value):
         words = [w for w in re.split(r"[\s._-]+", value or "") if w]

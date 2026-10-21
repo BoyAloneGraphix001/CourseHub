@@ -23,7 +23,7 @@ def public_courses():
         )
     )
 
-
+# Home 
 @main.route("/")
 def index():
     courses = public_courses().order_by(Course.created_at.desc()).limit(3).all()
@@ -38,7 +38,7 @@ def index():
                            categories=categories, counts=counts)
 
 
-
+# Courses 
 @main.route("/courses")
 def catalog():
     title = "All Courses | CourseHub"
@@ -95,13 +95,14 @@ def course_detail(course_id):
                            enrollment=enrollment, done_ids=done_ids,
                            resume=resume, is_owner=is_owner)
 
-
+# Instructor 
 @main.route("/instructors/<int:user_id>")
 def instructor_profile(user_id):
+    title = "Instructor || CourseHub"
     instructor = User.query.get_or_404(user_id)
     if not instructor.is_active_account or not (instructor.is_instructor or instructor.courses):
         abort(404)
     courses = (public_courses().filter(Course.instructor_id == instructor.id)
                .order_by(Course.created_at.desc()).all())
     return render_template("main/instructor_profile.html",
-                           instructor=instructor, courses=courses)
+                           instructor=instructor, courses=courses, title=title)

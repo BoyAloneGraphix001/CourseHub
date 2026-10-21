@@ -98,6 +98,7 @@ def toggle_user(user_id):
 # Courses 
 @admin.route("/courses")
 def courses():
+    title = "Admin Courses || CourseHub"
     q = request.args.get("q", "").strip()
     status = request.args.get("status", "")
     page = request.args.get("page", 1, type=int)
@@ -117,7 +118,7 @@ def courses():
 
     pagination = (query.order_by(Course.created_at.desc())
                        .paginate(page=page, per_page=15, error_out=False))
-    return render_template("admin/courses.html", pagination=pagination, q=q, status=status)
+    return render_template("admin/courses.html", pagination=pagination, q=q, status=status, title=title)
 
 # Courses toggle 
 @admin.route("/courses/<int:course_id>/toggle", methods=["POST"])

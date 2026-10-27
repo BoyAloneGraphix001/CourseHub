@@ -1,22 +1,46 @@
-<footer class="sticky bottom-0 left-0 right-0 z-30 mt-10 border-t border-gray-200 bg-white py-8 text-sm text-gray-500">
-  <div class="mx-auto flex max-w-6xl flex-col items-center gap-5 px-4">
+{% from "components/_logo.html" import logo_mark %}
 
-    <button type="button" data-back-top aria-label="Back to top"
-            class="inline-flex items-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:border-brand-500 hover:text-brand-600 cursor-pointer">
-      <span class="text-base leading-none">&uarr;</span>Back to top
+<footer class="mt-auto border-t border-gray-200 bg-white">
+  <div class="mx-auto flex max-w-6xl items-center justify-between gap-6 px-4 py-6">
+
+    {# ───────── Left: brand, links, copyright ───────── #}
+    <div class="min-w-0">
+      <div class="flex flex-wrap items-center gap-x-8 gap-y-3">
+        <a href="{{ url_for('main.index') }}" class="flex items-center gap-2 font-bold text-gray-900">
+          {{ logo_mark('h-8 w-8', 'h-4 w-4') }}
+          CourseHub
+        </a>
+
+        <nav class="flex flex-wrap gap-x-5 gap-y-1 text-sm text-gray-500" aria-label="Footer">
+          <a href="{{ url_for('main.index') }}" class="hover:text-gray-900">Home</a>
+          <a href="{{ url_for('main.catalog') }}" class="hover:text-gray-900">Courses</a>
+          {% if current_user.is_authenticated %}
+            <a href="{{ url_for('student.dashboard') }}" class="hover:text-gray-900">Dashboard</a>
+          {% else %}
+            <a href="{{ url_for('auth.login') }}" class="hover:text-gray-900">Log in</a>
+            <a href="{{ url_for('auth.register') }}" class="hover:text-gray-900">Sign up</a>
+          {% endif %}
+        </nav>
+      </div>
+
+            <p class="mt-3 text-xs text-gray-400">&copy; {{ current_year }} CourseHub. Free courses for everyone.</p>
+    </div>
+
+    {# ───────── Right: back to top ───────── #}
+    <button type="button" id="back-to-top" title="Back to top" aria-label="Back to top"
+            class="group flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-gray-300 bg-white text-gray-600 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-brand-600 hover:bg-brand-600 hover:text-white hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 cursor-pointer">
+      <svg class="h-5 w-5 transition-transform duration-200 group-hover:-translate-y-0.5" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 19V5"/>
+        <path d="M5 12l7-7 7 7"/>
+      </svg>
     </button>
-
-    <nav class="flex flex-wrap justify-center gap-x-6 gap-y-2" aria-label="Footer">
-      <a href="{{ url_for('main.index') }}" class="hover:text-gray-900">Home</a>
-      <a href="{{ url_for('main.catalog') }}" class="hover:text-gray-900">Courses</a> <!--{# change main.index to main.catalog later #}-->
-      {% if current_user.is_authenticated %}
-        <a href="{{ url_for('student.dashboard') }}" class="hover:text-gray-900">Dashboard</a>
-      {% else %}
-        <a href="{{ url_for('auth.login') }}" class="hover:text-gray-900">Log in</a>
-        <a href="{{ url_for('auth.register') }}" class="hover:text-gray-900">Sign up</a>
-      {% endif %}
-    </nav>
-
-    <p>&copy; CourseHub. Free courses for everyone.</p>
   </div>
 </footer>
+
+<script>
+  document.getElementById('back-to-top')?.addEventListener('click', () => {
+    const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: calm ? 'auto' : 'smooth' });
+  });
+</script>

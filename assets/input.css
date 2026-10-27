@@ -20,6 +20,24 @@
 
   --font-sans: "Roboto", ui-sans-serif, system-ui, sans-serif;
 }
+@layer base {
+  html {
+    height: 100%;
+  }
+  body {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+  main {
+    flex: 1 0 auto;
+    width: 100%;
+  }
+  footer {
+    flex-shrink: 0;
+  }
+}
 
 /* reusable component classes for patterns you repeat everywhere */
 @utility btn {

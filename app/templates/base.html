@@ -15,18 +15,16 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.svg') }}" type="image/svg+xml">
     <title>{% if title %} {{ title }} {% else %} CourseHub {% endif %}</title>
   </head>
   <body class="flex min-h-full flex-col bg-gray-50 font-sans text-gray-900 antialiased mx-auto max-w-6xl px-4">
     {% include 'components/_navbar.html' %}
 
-    <main id="app" class="page-container flex-1 py-8">
+    <main id="app" class="page-container flex-1 py-8 {% block main_class %}{% endblock %}">
       {% include 'components/_flash.html' %} 
+      {% block content %} {% endblock %}
     </main>
-
-    {% block content %}
-
-    {% endblock %}
 
     {% include 'components/_footer.html' %}
     {% block scripts %}{% endblock %}

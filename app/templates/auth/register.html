@@ -3,8 +3,9 @@
 
 {# {% block title %}Create account | CourseHub{% endblock %} #}
 
+{% block main_class %}flex flex-col justify-center{% endblock %}
 {% block content %}
-<div class="mx-auto max-w-md "> <!--Work on the size of the card later-->
+<div class="mx-auto w-full max-w-md "> <!--Work on the size of the card later-->
   <div class="card p-8">
 
     <h1 class="text-2xl font-bold tracking-tight">Create your free account</h1>
@@ -20,7 +21,7 @@
       {{ render_password(form.confirm) }}
       {{ render_checkbox(form.teach) }}
 
-      {{ form.submit(class_='btn-primary w-full') }}
+      {{ form.submit(class_='btn-primary w-full cursor-pointer') }}
     </form>
 
     <p class="mt-6 text-center text-sm text-gray-600">

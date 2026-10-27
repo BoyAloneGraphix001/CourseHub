@@ -2,6 +2,7 @@ import re
 from flask import Flask
 from config import Config
 from app.extensions import db, migrate,csrf, login_manager, mail
+from datetime import datetime, timezone
 
 
 def create_app(config_class=Config):
@@ -35,5 +36,9 @@ def create_app(config_class=Config):
         if len(words) >= 2:
             return (words[0][0] + words[1][0]).upper()
         return (words[0][:2] if words else "?").upper()
+
+    @app.context_processor
+    def inject_year():
+        return {"current_year": datetime.now(timezone.utc).year}
     
     return app

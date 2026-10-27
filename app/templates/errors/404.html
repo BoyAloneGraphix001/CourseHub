@@ -1,0 +1,28 @@
+{% extends "errors/_layout.html" %}
+
+{% set code = 404 %}
+{% set title = "We couldn't find that page" %}
+{% set message = "The link may be broken, or the page may have moved. Try searching for what you were after." %}
+
+{% block error_actions %}
+  <button type="button" data-go-back class="btn-outline cursor-pointer">Go back</button>
+  <a href="{{ url_for('main.index') }}" class="btn-primary">Back to home</a>
+{% endblock %}
+
+{% block error_extra %}
+  <form method="get" action="{{ url_for('main.catalog') }}" role="search"
+        class="mx-auto mt-8 flex max-w-sm gap-2">
+    <label for="error-q" class="sr-only">Search courses</label>
+    <input id="error-q" name="q" type="search" placeholder="Search courses"
+           class="w-full rounded-lg border border-gray-300 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30">
+    <button class="btn-primary shrink-0 cursor-pointer">Search</button>
+  </form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.querySelector('[data-go-back]')?.addEventListener('click', () => {
+    if (history.length > 1) history.back(); else location.href = '/';
+  });
+</script>
+{% endblock %}

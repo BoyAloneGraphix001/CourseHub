@@ -26,6 +26,8 @@ def create_app(config_class=Config):
     app.register_blueprint(student, url_prefix="/student")
     from app.instructor.routes import instructor
     app.register_blueprint(instructor, url_prefix="/instructor")
+    from app.handlers import register_error_handlers
+    register_error_handlers(app)
     from app.commands import register_commands
     register_commands(app)  
 

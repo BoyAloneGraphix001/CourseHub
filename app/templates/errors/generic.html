@@ -1,0 +1,14 @@
+{% extends "errors/_layout.html" %}
+
+{% block error_actions %}
+  <button type="button" data-go-back class="btn-primary cursor-pointer">Go back</button>
+  <a href="{{ url_for('main.index') }}" class="btn-outline cursor-pointer">Back to home</a>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.querySelector('[data-go-back]')?.addEventListener('click', () => {
+    if (history.length > 1) history.back(); else location.href = '/';
+  });
+</script>
+{% endblock %}

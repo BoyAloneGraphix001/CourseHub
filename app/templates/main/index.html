@@ -168,6 +168,8 @@
       ('Is it really free?', 'Yes. Every course on CourseHub is free to join and to finish.'),
       ('Why do I need an account to watch?', 'Registering unlocks the lesson videos and lets us save your progress for each course.'),
       ('Do I have to enroll in a course?', 'Yes. Pressing Enroll adds the course to your list so you can resume and track progress.'),
+      ('Is there a deadline to finish a course?', 'No. Every course is self-paced, so you can learn in one weekend or over several months. Your progress is saved, and you can pick up where you stopped.'),
+      ('How do I report a problem with a course?', 'Open the course page and choose Report this course. Tell us what is wrong, and an admin will review it. You need to be logged in to send a report.'),
       ('Can I teach on CourseHub?', 'Yes. Tick the instructor option when you register, or turn it on later from your dashboard.'),
     ] %}
       <details class="group px-5 py-4">
@@ -184,17 +186,17 @@
 {# ───────── Instructor call to action ───────── #}
 <section class="my-10 rounded-3xl bg-brand-900 p-8 text-center text-white sm:p-12">
   <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">Have something to teach?</h2>
-  <p class="mx-auto mt-3 max-w-md text-brand-100">Publish a free course and reach learners everywhere.</p>
+  <p class="mx-auto mt-3 max-w-md text-brand-100 mb-5">Publish a free course and reach learners everywhere.</p>
 
   {% if current_user.is_authenticated and current_user.is_instructor %}
     <a href="{{ url_for('instructor.dashboard') }}" class="btn mt-6 bg-sand-500 text-brand-900 hover:brightness-95">Go to instructor dashboard</a>
   {% elif current_user.is_authenticated %}
     <form method="post" action="{{ url_for('student.become_instructor') }}" class="mt-6 inline">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      <button type="submit" class="btn bg-sand-500 text-brand-900 hover:brightness-95">Become an instructor</button>
+      <button type="submit" class="btn bg-sand-500 text-brand-900 hover:brightness-95 cursor-pointer">Become an instructor</button>
     </form>
   {% else %}
-    <a href="{{ url_for('auth.register') }}" class="btn mt-6 bg-sand-500 text-brand-900 hover:brightness-95">Become an instructor</a>
+    <a href="{{ url_for('auth.register') }}" class="btn mt-6 bg-sand-500 text-brand-900 hover:brightness-95 cursor-pointer">Become an instructor</a>
   {% endif %}
 </section>
 

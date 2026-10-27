@@ -1,0 +1,14 @@
+{% extends "errors/_layout.html" %}
+
+{% set code = 403 %}
+{% set title = "You don't have access" %}
+{% set message = "This page is only for people with the right permissions. If you think that's a mistake, try logging in with a different account." %}
+
+{% block error_actions %}
+  <a href="{{ url_for('main.index') }}" class="btn-primary">Back to home</a>
+  {% if current_user.is_authenticated %}
+    <a href="{{ url_for('student.dashboard') }}" class="btn-outline">Go to my dashboard</a>
+  {% else %}
+    <a href="{{ url_for('auth.login', next=request.path) }}" class="btn-outline">Log in</a>
+  {% endif %}
+{% endblock %}

@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import current_user
 from sqlalchemy import func
 from sqlalchemy.orm import joinedload, selectinload
+from sqlalchemy.exc import SQLAlchemyError
 
 from app.extensions import db, login_manager
 from app.models import Course, Category, Section, Lesson, Enrollment
@@ -71,6 +72,8 @@ def next_position(model, **filters):
 
 def swap(items, obj, direction):
     """Move obj one step up or down and renumber the whole list."""
+    if direction not in ("up", "down"):
+        return
     items = sorted(items, key=lambda x: (x.position, x.id))
     i = items.index(obj)
     j = i - 1 if direction == "up" else i + 1
@@ -89,7 +92,6 @@ def apply_thumbnail(course, file):
     except (OSError, ValueError):
         flash("That image couldn't be processed. Try a different file.", "danger")
         return False
-    delete_picture(course.thumbnail, "course_thumbnails")
     course.thumbnail = filename
     return True
 
@@ -164,16 +166,50 @@ def edit_course(course_id):
         form.category_id.data = course.category_id or 0
 
     if form.validate_on_submit():
+        previous_thumbnail = course.thumbnail
+        new_thumbnail = None
         course.title = form.title.data.strip()
         course.description = (form.description.data or "").strip() or None
         course.level = form.level.data
         course.category_id = form.category_id.data or None
         if apply_thumbnail(course, form.thumbnail.data):
-            db.session.commit()
+            new_thumbnail = course.thumbnail if course.thumbnail != previous_thumbnail else None
+            try:
+                db.session.commit()
+            except SQLAlchemyError:
+                db.session.rollback()
+                if new_thumbnail:
+                    delete_picture(new_thumbnail, "course_thumbnails")
+                flash("Course details could not be saved. Please try again.", "danger")
+                return redirect(url_for("instructor.edit_course", course_id=course.id))
+            if new_thumbnail and previous_thumbnail:
+                delete_picture(previous_thumbnail, "course_thumbnails")
             flash("Course details saved.", "success")
             return redirect(url_for("instructor.edit_course", course_id=course.id))
         db.session.rollback()
     return render_template("instructor/course_form.html", form=form, course=course, title=title)
+
+
+@instructor.route("/courses/<int:course_id>/thumbnail/remove", methods=["POST"])
+def remove_thumbnail(course_id):
+    course = own_course_or_404(course_id)
+    previous_thumbnail = course.thumbnail
+    if not previous_thumbnail:
+        flash("This course has no thumbnail to remove.", "info")
+        return redirect(url_for("instructor.edit_course", course_id=course.id))
+
+    course.thumbnail = None
+    try:
+        db.session.commit()
+    except SQLAlchemyError:
+        db.session.rollback()
+        flash("The thumbnail could not be removed. Please try again.", "danger")
+        return redirect(url_for("instructor.edit_course", course_id=course.id))
+
+    delete_picture(previous_thumbnail, "course_thumbnails")
+    flash("Course thumbnail removed. The default image is now shown.", "success")
+    return redirect(url_for("instructor.edit_course", course_id=course.id))
+
 
 # Publish Courses 
 @instructor.route("/courses/<int:course_id>/publish", methods=["POST"])

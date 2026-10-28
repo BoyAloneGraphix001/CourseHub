@@ -1,13 +1,13 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, abort
 from flask_login import login_required, current_user
 from sqlalchemy.orm import joinedload, selectinload
+from sqlalchemy.exc import SQLAlchemyError
 
 from app.extensions import db
 from app.models import (Course, Section, Lesson, Enrollment, LessonProgress,
                         ProfileUpdate, Report)
 from app.student.forms import ProfileForm, ChangePasswordForm, ReportForm
 from app.utils import get_adjacent_lessons, save_picture, delete_picture
-from werkzeug.datastructures import FileStorage
 
 student = Blueprint("student", __name__)
 
@@ -58,7 +58,10 @@ def dashboard():
     )
     cont_enrollment, cont_lesson = None, None
     for e in enrollments:
-        if e.progress_percent < 100 and e.course.lesson_count:
+        if (e.course.is_published
+                and e.course.instructor.is_active_account
+                and e.progress_percent < 100
+                and e.course.lesson_count):
             cont_enrollment, cont_lesson = e, resume_lesson(e.course, e.completed_lesson_ids)
             break
     return render_template("student/dashboard.html", enrollments=enrollments,
@@ -72,6 +75,8 @@ def enroll(course_id):
     course = Course.query.filter_by(id=course_id, is_published=True).first_or_404()
     if course.instructor_id == current_user.id:
         flash("This is your own course.", "info")
+    elif not course.instructor.is_active_account:
+        flash("This course is unavailable because the instructor is suspended.", "warning")
     elif not Enrollment.query.filter_by(student_id=current_user.id, course_id=course.id).first():
         db.session.add(Enrollment(student_id=current_user.id, course_id=course.id))
         db.session.commit()
@@ -137,14 +142,10 @@ def profile():
 def edit_profile():
     title = "Edit Profile || CourseHub"
     form = ProfileForm(obj=current_user)
-    picture = form.picture.data
-    if isinstance(picture, FileStorage) and picture.filename:
-        try:
-            filename = save_picture(picture, "profile_pics", size=(400, 400))
-        except (OSError, ValueError):
-            ...
     if form.validate_on_submit():
         changes = []
+        previous_picture = current_user.profile_pic
+        new_picture = None
         username = form.username.data.strip()
         bio = (form.bio.data or "").strip()
 
@@ -166,7 +167,7 @@ def edit_profile():
                 flash("That image couldn't be processed. Try a different file.", "danger")
                 return render_template("student/edit_profile.html", form=form,
                                        password_form=ChangePasswordForm())
-            delete_picture(current_user.profile_pic, "profile_pics")
+            new_picture = filename
             current_user.profile_pic = filename
             changes.append("Profile picture")
 
@@ -176,12 +177,44 @@ def edit_profile():
 
         for label in changes:
             db.session.add(ProfileUpdate(user_id=current_user.id, summary=f"{label} updated"))
-        db.session.commit()
+        try:
+            db.session.commit()
+        except SQLAlchemyError:
+            db.session.rollback()
+            if new_picture:
+                delete_picture(new_picture, "profile_pics")
+            flash("Your profile could not be updated. Please try again.", "danger")
+            return redirect(url_for("student.edit_profile"))
+
+        if new_picture and previous_picture != new_picture:
+            delete_picture(previous_picture, "profile_pics")
+
         flash("Profile updated.", "success")
         return redirect(url_for("student.profile"))
 
     return render_template("student/edit_profile.html", form=form,
                            password_form=ChangePasswordForm(), title=title)
+
+
+@student.route("/profile/remove-picture", methods=["POST"])
+@login_required
+def remove_profile_picture():
+    previous_picture = current_user.profile_pic
+    current_user.profile_pic = "default.jpg"
+    db.session.add(ProfileUpdate(user_id=current_user.id, summary="Profile picture removed"))
+
+    try:
+        db.session.commit()
+    except SQLAlchemyError:
+        db.session.rollback()
+        flash("Your profile picture could not be removed. Please try again.", "danger")
+        return redirect(url_for("student.edit_profile"))
+
+    if previous_picture != "default.jpg":
+        delete_picture(previous_picture, "profile_pics")
+
+    flash("Profile picture removed. The default image has been restored.", "success")
+    return redirect(url_for("student.edit_profile"))
 
 
 @student.route("/profile/password", methods=["POST"])

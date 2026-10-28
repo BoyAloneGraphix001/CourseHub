@@ -7,6 +7,7 @@ class Config:
     SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI')
     SQLALCHEMY_TRACK_MODIFICATIONS = os.getenv('SQLALCHEMY_TRACK_MODIFICATIONS') == 'True'
     SECRET_KEY = os.getenv('SECRET_KEY')
+    DEBUG = os.getenv('FLASK_DEBUG', 'False').lower() == 'true'
     MAX_CONTENT_LENGTH = 6 * 1024 * 1024  # safety net, slightly above the 5MB image rule
     MAIL_SERVER = 'smtp.gmail.com'
     MAIL_PORT = 587

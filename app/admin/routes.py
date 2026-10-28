@@ -124,6 +124,9 @@ def courses():
 @admin.route("/courses/<int:course_id>/toggle", methods=["POST"])
 def toggle_course(course_id):
     course = db.get_or_404(Course, course_id)
+    if not course.is_published and course.lesson_count == 0:
+        flash("This course has no lessons. Add at least one lesson before publishing.", "warning")
+        return back(url_for("admin.courses"))
     course.is_published = not course.is_published
     db.session.commit()
     flash(f"'{course.title}' is now "

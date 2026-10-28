@@ -1,24 +1,44 @@
-<article class="card flex h-full flex-col overflow-hidden transition hover:shadow-md">
+{% set unavailable = not course.is_published or not course.instructor.is_active_account %}
+<article class="card flex h-full flex-col overflow-hidden transition {{ 'cursor-default bg-gray-50 opacity-60 grayscale' if unavailable else 'hover:shadow-md' }}" {% if unavailable %}aria-disabled="true"{% endif %}>
 
-  <a href="{{ url_for('main.course_detail', course_id=course.id) }}" class="relative block" tabindex="-1" aria-hidden="true">
+  {% if unavailable %}
+    <div class="relative block" aria-hidden="true">
+  {% else %}
+    <a href="{{ url_for('main.course_detail', course_id=course.id) }}" class="relative block" tabindex="-1" aria-hidden="true">
+  {% endif %}
     {% if course.thumbnail %}
       <img src="{{ url_for('static', filename='uploads/course_thumbnails/' ~ course.thumbnail) }}"
-           alt="" loading="lazy" class="aspect-video w-full object-cover">
+           alt="" loading="lazy" class="aspect-video w-full object-cover"
+           onerror="this.hidden=true;this.nextElementSibling.hidden=false">
+      <div hidden class="flex aspect-video w-full items-center justify-center bg-brand-50 text-5xl font-bold text-brand-600">
+        {{ course.title[:1] | upper }}
+      </div>
     {% else %}
       <div class="flex aspect-video items-center justify-center bg-brand-50 text-5xl font-bold text-brand-600">
         {{ course.title[:1] | upper }}
       </div>
     {% endif %}
-    <span class="absolute left-3 top-3 rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-brand-700">Free</span>
-  </a>
+    <span class="absolute left-3 top-3 rounded-full px-2.5 py-1 text-xs font-semibold {{ 'bg-gray-700 text-white' if unavailable else 'bg-white text-brand-700' }}">
+      {{ 'Unavailable' if unavailable else 'Free' }}
+    </span>
+  {% if unavailable %}</div>{% else %}</a>{% endif %}
 
   <div class="flex flex-1 flex-col p-5">
-    <h3 class="font-semibold leading-snug">
-      <a href="{{ url_for('main.course_detail', course_id=course.id) }}" class="hover:text-brand-600">{{ course.title }}</a>
+    <h3 class="font-semibold leading-snug {{ 'text-gray-600' if unavailable else '' }}">
+      {% if unavailable %}
+        <span>{{ course.title }}</span>
+      {% else %}
+        <a href="{{ url_for('main.course_detail', course_id=course.id) }}" class="hover:text-brand-600">{{ course.title }}</a>
+      {% endif %}
     </h3>
     <p class="mt-1 text-sm text-gray-500">
-      by <a href="{{ url_for('main.instructor_profile', user_id=course.instructor.id) }}"
-            class="hover:text-brand-600 hover:underline">{{ course.instructor.username }}</a>
+      by
+      {% if unavailable %}
+        <span>{{ course.instructor.username }}</span>
+      {% else %}
+        <a href="{{ url_for('main.instructor_profile', user_id=course.instructor.id) }}"
+           class="hover:text-brand-600 hover:underline">{{ course.instructor.username }}</a>
+      {% endif %}
     </p>
 
     {% if progress is defined and progress is not none %}
@@ -30,7 +50,7 @@
 
     <div class="mt-auto flex flex-wrap items-center gap-2 pt-4 text-xs text-gray-600">
       {% if course.category %}
-        <span class="rounded-full bg-gray-100 px-2.5 py-1">{{ course.category.username }}</span>
+        <span class="rounded-full bg-gray-100 px-2.5 py-1">{{ course.category.name }}</span>
       {% endif %}
       {% if course.level %}
         <span class="rounded-full bg-gray-100 px-2.5 py-1">{{ course.level | capitalize }}</span>

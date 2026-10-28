@@ -32,6 +32,8 @@ def index():
         db.session.query(Category.id, func.count(Course.id))
         .outerjoin(Course, and_(Course.category_id == Category.id,
                                 Course.is_published.is_(True)))
+        .join(User, Course.instructor_id == User.id, isouter=True)
+        .filter(or_(User.id.is_(None), User.is_active_account.is_(True)))
         .group_by(Category.id).all()
     )
     return render_template("main/index.html", courses=courses,

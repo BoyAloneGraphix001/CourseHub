@@ -3,7 +3,7 @@ import secrets
 from urllib.parse import urlparse, urljoin, parse_qs
 
 from flask import current_app, request
-from PIL import Image          # pip install Pillow
+from PIL import Image, UnidentifiedImageError
 
 ALLOWED_IMAGES = {"png", "jpg", "jpeg", "webp"}
 
@@ -16,18 +16,29 @@ def allowed_file(filename, allowed=ALLOWED_IMAGES):
 def save_picture(file, folder, size=(400, 400)):
     """Save an uploaded image to static/uploads/<folder>/ under a random name,
     resized to fit inside `size`. Returns the new filename."""
-    ext = os.path.splitext(file.filename)[1].lower()
-    filename = secrets.token_hex(8) + ext
-    folder_path = os.path.join(current_app.root_path, "static", "uploads", folder)
-    os.makedirs(folder_path, exist_ok=True)          # creates the folder if it is missing
-
-    img = Image.open(file)
-    img.thumbnail(size)
-    if ext in (".jpg", ".jpeg") and img.mode in ("RGBA", "P"):
-        img = img.convert("RGB")                     # JPEG can't store transparency
-    img.save(os.path.join(folder_path, filename))
     if not hasattr(file, "filename") or not file.filename:
-        raise ValueError("No file was uploaded.")                       #check this out later
+        raise ValueError("No file was uploaded.")
+
+    ext = os.path.splitext(file.filename)[1].lower()
+    if ext.lstrip(".") not in ALLOWED_IMAGES:
+        raise ValueError("Unsupported image type.")
+
+    try:
+        file.seek(0)
+        with Image.open(file) as img:
+            img.verify()
+        file.seek(0)
+        with Image.open(file) as img:
+            img.thumbnail(size)
+            if ext in (".jpg", ".jpeg") and img.mode in ("RGBA", "P"):
+                img = img.convert("RGB")
+            filename = secrets.token_hex(8) + ext
+            folder_path = os.path.join(current_app.root_path, "static", "uploads", folder)
+            os.makedirs(folder_path, exist_ok=True)
+            img.save(os.path.join(folder_path, filename))
+    except (OSError, ValueError, Image.DecompressionBombError, UnidentifiedImageError) as exc:
+        raise ValueError("The uploaded file is not a valid image.") from exc
+
     return filename
 
 
@@ -38,7 +49,10 @@ def delete_picture(filename, folder, keep=("default.jpg",)):
         return
     path = os.path.join(current_app.root_path, "static", "uploads", folder, filename)
     if os.path.exists(path):
-        os.remove(path)
+        try:
+            os.remove(path)
+        except OSError:
+            current_app.logger.warning("Could not delete uploaded file: %s", path)
 
 
 # ───────────── Video links ─────────────

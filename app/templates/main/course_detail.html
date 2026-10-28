@@ -17,7 +17,11 @@
 
       {% if course.thumbnail %}
         <img src="{{ url_for('static', filename='uploads/course_thumbnails/' ~ course.thumbnail) }}"
-             alt="" class="aspect-3/1 w-full rounded-2xl object-cover">
+             alt="" class="aspect-3/1 w-full rounded-2xl object-cover"
+             onerror="this.hidden=true;this.nextElementSibling.hidden=false">
+        <div hidden class="flex aspect-3/1 items-center justify-center rounded-2xl bg-brand-50 text-7xl font-bold text-brand-600">
+          {{ course.title[:1] | upper }}
+        </div>
       {% else %}
         <div class="flex aspect-3/1 items-center justify-center rounded-2xl bg-brand-50 text-7xl font-bold text-brand-600">
           {{ course.title[:1] | upper }}

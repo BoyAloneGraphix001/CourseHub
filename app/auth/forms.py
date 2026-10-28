@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired, Email, Length, EqualTo, ValidationError
+from sqlalchemy import func
 from app.models import User
 
 
@@ -16,14 +17,14 @@ class RegisterForm(FlaskForm):
 
 
     def validate_username(self, username):
-        user = User.query.filter_by(
-            username = username.data).first()
+        user = User.query.filter(
+            func.lower(User.username) == username.data.strip().lower()).first()
         if user:
             raise ValidationError('This username is taken, please enter a different one')
 
     def validate_email(self, email):
-            user = User.query.filter_by(
-                email = email.data.lower().strip()).first()
+            user = User.query.filter(
+                func.lower(User.email) == email.data.lower().strip()).first()
             if user:
                 raise ValidationError('That email is already registered.')
 

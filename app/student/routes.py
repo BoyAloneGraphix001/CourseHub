@@ -256,13 +256,17 @@ def report_course(course_id):
 
     form = ReportForm()
     if form.validate_on_submit():
-        already = Report.query.filter_by(course_id=course.id, reporter_id=current_user.id,
-                                         status="open").first()
-        if already:
+        existing = Report.query.filter_by(course_id=course.id,
+                                          reporter_id=current_user.id).first()
+        if existing and existing.status == "open":
             flash("You've already reported this course. We'll review it soon.", "info")
         else:
-            db.session.add(Report(course_id=course.id, reporter_id=current_user.id,
-                                  reason=form.reason.data.strip()))
+            if existing:
+                existing.reason = form.reason.data.strip()
+                existing.status = "open"
+            else:
+                db.session.add(Report(course_id=course.id, reporter_id=current_user.id,
+                                      reason=form.reason.data.strip()))
             db.session.commit()
             flash("Thanks. We'll review your report.", "success")
         return redirect(url_for("main.course_detail", course_id=course.id))

@@ -97,6 +97,7 @@ def apply_thumbnail(course, file):
 # ───────────── Dashboard ─────────────
 @instructor.route("/")
 def dashboard():
+    title = "Instructor's Dashboard || CourseHub"
     courses = (Course.query.filter_by(instructor_id=current_user.id)
                .options(selectinload(Course.sections).selectinload(Section.lessons)).all())
     ids = [c.id for c in courses]
@@ -112,7 +113,7 @@ def dashboard():
         "learners": learners or 0,
         "lessons": sum(c.lesson_count for c in courses),
     }
-    return render_template("instructor/dashboard.html", stats=stats, recent=recent)
+    return render_template("instructor/dashboard.html", stats=stats, recent=recent, title=title)
 
 
 # Courses 

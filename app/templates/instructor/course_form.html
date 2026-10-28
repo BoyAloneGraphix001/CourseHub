@@ -45,7 +45,7 @@
     {{ render_field(form.description, rows=6, placeholder='What will learners be able to do after this course?') }}
 
     <div class="flex gap-3">
-      {{ form.submit(class_='btn-primary') }}
+      {{ form.submit(class_='btn-primary cursor-pointer') }}
       <a href="{{ url_for('instructor.courses') }}" class="btn-outline">Cancel</a>
     </div>
   </form>

@@ -19,7 +19,7 @@
       {{ form.hidden_tag() }}
       {{ render_field(form.reason, rows=5, placeholder='For example: the content is misleading, copied, or inappropriate.') }}
       <div class="flex gap-3">
-        {{ form.submit(class_='btn-primary') }}
+        {{ form.submit(class_='btn-primary cursor-pointer') }}
         <a href="{{ url_for('main.course_detail', course_id=course.id) }}" class="btn-outline">Cancel</a>
       </div>
     </form>

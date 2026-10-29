@@ -40,7 +40,7 @@
             <form method="post" action="{{ url_for('admin.resolve_report', report_id=r.id) }}">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
               <input type="hidden" name="next" value="{{ request.full_path }}">
-              <button class="btn-primary">Resolve</button>
+              <button class="btn-primary cursor-pointer">Resolve</button>
             </form>
 
             {% if r.course.is_published %}
@@ -48,7 +48,7 @@
                 data-confirm="Unpublish this course and resolve its open reports?">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <input type="hidden" name="next" value="{{ request.full_path }}">
-                <button class="btn border border-red-200 bg-white text-red-700 hover:bg-red-50">Unpublish course</button>
+                <button class="btn border border-red-200 bg-white text-red-700 hover:bg-red-50 cursor-pointer">Unpublish course</button>
               </form>
             {% endif %}
           </div>

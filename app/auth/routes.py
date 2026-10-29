@@ -63,6 +63,7 @@ def logout():
 
 @auth.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password():
+    title = "Forgotten Password || CourseHub"
     if current_user.is_authenticated:
         return redirect(url_for("student.dashboard"))
 
@@ -75,7 +76,7 @@ def forgot_password():
         flash("If that email is registered, we've sent a link to reset your password. "
               "Check your inbox and your spam folder.", "info")
         return redirect(url_for("auth.login"))
-    return render_template("auth/forgot_password.html", form=form)
+    return render_template("auth/forgot_password.html", form=form, title=title)
 
 
 @auth.route("/reset-password/<token>", methods=["GET", "POST"])

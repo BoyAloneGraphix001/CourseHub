@@ -42,18 +42,18 @@ class User(db.Model, UserMixin):
         return f'<User {self.email}>'
 
 
-    def get_reset_token(self):     # Generates a token for password reset that expires after 30 minutes (1800 seconds)
-        s = Serializer(current_app.config['SECRET_KEY'])
-        return s.dumps({'user_id': self.id})
+    # def get_reset_token(self):     # Generates a token for password reset that expires after 30 minutes (1800 seconds)
+    #     s = Serializer(current_app.config['SECRET_KEY'])
+    #     return s.dumps({'user_id': self.id})
 
-    @staticmethod
-    def verify_reset_token(token, max_age=1800):
-        s = Serializer(current_app.config['SECRET_KEY'])
-        try:
-            user_id = s.loads(token, max_age=max_age)['user_id']
-        except:
-            return None
-        return db.session.get(User, user_id)
+    # @staticmethod
+    # def verify_reset_token(token, max_age=1800):
+    #     s = Serializer(current_app.config['SECRET_KEY'])
+    #     try:
+    #         user_id = s.loads(token, max_age=max_age)['user_id']
+    #     except:
+    #         return None
+    #     return db.session.get(User, user_id)
 
 
 

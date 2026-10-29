@@ -22,6 +22,9 @@
       {{ form.submit(class_='btn-primary w-full cursor-pointer') }}
     </form>
 
+      <p class="mt-3 mb-5 text-center text-sm">
+        <a href="{{ url_for('auth.forgot_password') }}" class="font-medium text-brand-600 hover:underline">Forgot password?</a>
+      </p>
     <p class="mt-6 text-center text-sm text-gray-600">
       New here?
       <a href="{{ url_for('auth.register', next=request.args.get('next')) }}"

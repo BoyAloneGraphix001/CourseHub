@@ -9,6 +9,17 @@
   /* ---------- Sidebar drawer (mobile hamburger) ---------- */
   const sidebar  = $('#sidebar');
   const backdrop = $('#sidebar-backdrop');
+  const mobileMenu = $('[data-mobile-menu]');
+  const mobileMenuToggle = $('[data-mobile-menu-toggle]');
+
+  function setMobileMenu(open) {
+    if (!mobileMenu || !mobileMenuToggle) return;
+    mobileMenu.classList.toggle('hidden', !open);
+    mobileMenuToggle.setAttribute('aria-expanded', String(open));
+    mobileMenuToggle.setAttribute('aria-label', open ? 'Close navigation menu' : 'Open navigation menu');
+    $('[data-menu-icon-open]', mobileMenuToggle)?.classList.toggle('hidden', open);
+    $('[data-menu-icon-close]', mobileMenuToggle)?.classList.toggle('hidden', !open);
+  }
 
   function setSidebar(open) {
     if (!sidebar) return;
@@ -20,6 +31,19 @@
 
   /* ---------- Click handlers (delegated) ---------- */
   document.addEventListener('click', async (e) => {
+    // mobile navbar menu
+    if (e.target.closest('[data-mobile-menu-toggle]')) {
+      setMobileMenu(mobileMenu?.classList.contains('hidden'));
+      return;
+    }
+    if (e.target.closest('[data-mobile-menu-option]')) {
+      setMobileMenu(false);
+    }
+    if (mobileMenu && !mobileMenu.classList.contains('hidden') &&
+        !e.target.closest('[data-mobile-menu]') && !e.target.closest('[data-mobile-menu-toggle]')) {
+      setMobileMenu(false);
+    }
+
     // sidebar open/close
     if (e.target.closest('[data-sidebar-toggle]')) {
       setSidebar(sidebar?.dataset.open !== 'true');
@@ -73,7 +97,14 @@
   });
 
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && sidebar?.dataset.open === 'true') setSidebar(false);
+    if (e.key === 'Escape') {
+      setMobileMenu(false);
+      if (sidebar?.dataset.open === 'true') setSidebar(false);
+    }
+  });
+
+  window.addEventListener('resize', () => {
+    if (matchMedia('(min-width: 768px)').matches) setMobileMenu(false);
   });
 
   /* ---------- Auto-dismiss success/info flash messages ---------- */

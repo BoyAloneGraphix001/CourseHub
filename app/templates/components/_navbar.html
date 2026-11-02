@@ -16,14 +16,14 @@
 {% endif %}
 
 <header class="sticky top-0 z-30 border-b border-gray-200 bg-white">
-  <nav class="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3.5" aria-label="Main">
+  <nav class="relative mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3.5" aria-label="Main">
 
     <a href="{{ url_for('main.index') }}" class="flex shrink-0 items-center gap-2 text-lg font-bold text-gray-900">
       {{ logo_mark() }}
-      <span class="hidden sm:inline">CourseHub</span>
+      <span>CourseHub</span>
     </a>
 
-    <div class="flex min-w-0 items-center gap-4 overflow-x-auto whitespace-nowrap text-sm font-medium text-gray-600 sm:gap-6">
+    <div class="hidden min-w-0 items-center gap-4 whitespace-nowrap text-sm font-medium text-gray-600 md:flex md:gap-6">
       {% for endpoint, label, endpoints, bp in nav_links %}
         {% set active = request.endpoint in endpoints or (bp and request.blueprint == bp) %}
         <a href="{{ url_for(endpoint) }}"
@@ -32,30 +32,71 @@
       {% endfor %}
     </div>
 
-    <div class="flex shrink-0 items-center gap-2">
+    <div class="hidden shrink-0 items-center gap-2 md:flex">
       {% if current_user.is_authenticated %}
         <a href="{{ url_for('student.profile') }}"
            class="flex min-w-0 items-center gap-2 text-sm font-medium text-gray-700 hover:text-brand-600">
           {{ avatar(current_user, 'h-8 w-8 text-xs') }}
-          <span class="hidden max-w-50 truncate md:inline">{{ current_user.username }}</span>
+          <span class="hidden max-w-50 truncate lg:inline">{{ current_user.username }}</span>
         </a>
         <form method="post" action="{{ url_for('auth.logout') }}">
-  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-  <button type="submit" title="Log out" aria-label="Log out" class="btn-outline group gap-2 cursor-pointer">
-    <svg class="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5"
-         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-      <polyline points="16 17 21 12 16 7"/>
-      <line x1="21" y1="12" x2="9" y2="12"/>
-    </svg>
-    <span class="hidden sm:inline">Log out</span>
-  </button>
-</form>
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" title="Log out" aria-label="Log out" class="btn-outline group gap-2 cursor-pointer">
+            <svg class="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5"
+                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            <span>Log out</span>
+          </button>
+        </form>
       {% else %}
         <a href="{{ url_for('auth.login') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900">Log in</a>
         <a href="{{ url_for('auth.register') }}" class="btn-primary">Sign up</a>
       {% endif %}
+    </div>
+
+    <button type="button" data-mobile-menu-toggle aria-controls="mobile-menu" aria-expanded="false"
+            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 md:hidden cursor-pointer active:bg-gray-100"
+            aria-label="Open navigation menu">
+      <svg data-menu-icon-open class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M4 6h16M4 12h16M4 18h16"/>
+      </svg>
+      <svg data-menu-icon-close class="hidden h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M6 6l12 12M18 6L6 18"/>
+      </svg>
+    </button>
+
+    <div id="mobile-menu" data-mobile-menu class="hidden absolute left-4 right-4 top-full mt-2 rounded-xl border border-gray-200 bg-white p-3 shadow-lg md:hidden">
+      <div class="flex flex-col text-sm font-medium text-gray-700">
+        {% for endpoint, label, endpoints, bp in nav_links %}
+          {% set active = request.endpoint in endpoints or (bp and request.blueprint == bp) %}
+          <a href="{{ url_for(endpoint) }}" data-mobile-menu-option
+             {% if active %}aria-current="page"{% endif %}
+             class="rounded-lg px-3 py-3 {{ 'bg-brand-50 font-semibold text-brand-700' if active else 'hover:bg-gray-50 hover:text-gray-900' }}">{{ label }}</a>
+        {% endfor %}
+      </div>
+
+      <div class="mt-3 border-t border-gray-100 pt-3">
+        {% if current_user.is_authenticated %}
+          <a href="{{ url_for('student.profile') }}" data-mobile-menu-option
+             class="mb-2 flex items-center gap-2 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-50">
+            {{ avatar(current_user, 'h-8 w-8 text-xs') }}
+            <span>{{ current_user.username }}</span>
+          </a>
+          <form method="post" action="{{ url_for('auth.logout') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" data-mobile-menu-option class="btn-outline w-full cursor-pointer">Log out</button>
+          </form>
+        {% else %}
+          <div class="grid grid-cols-2 gap-2">
+            <a href="{{ url_for('auth.login') }}" data-mobile-menu-option class="btn-outline">Log in</a>
+            <a href="{{ url_for('auth.register') }}" data-mobile-menu-option class="btn-primary">Sign up</a>
+          </div>
+        {% endif %}
+      </div>
     </div>
   </nav>
 </header>

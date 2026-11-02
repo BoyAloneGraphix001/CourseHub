@@ -36,8 +36,23 @@ def index():
         .filter(or_(User.id.is_(None), User.is_active_account.is_(True)))
         .group_by(Category.id).all()
     )
+    hero_course, hero_lesson = None, None
+    for course in courses:
+        for section in course.sections:
+            for lesson in section.lessons:
+                if lesson.video_url and lesson.video_url.startswith(
+                    ('https://www.youtube.com/embed/', 'https://player.vimeo.com/video/')
+                ):
+                    hero_course, hero_lesson = course, lesson
+                    break
+            if hero_lesson:
+                break
+        if hero_lesson:
+            break
+
     return render_template("main/index.html", courses=courses,
-                           categories=categories, counts=counts)
+                           categories=categories, counts=counts,
+                           hero_course=hero_course, hero_lesson=hero_lesson)
 
 
 # Courses 

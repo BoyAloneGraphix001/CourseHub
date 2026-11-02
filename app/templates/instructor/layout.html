@@ -28,7 +28,8 @@
                   lg:overflow-visible lg:bg-transparent lg:p-0 lg:shadow-none">
       <div class="card flex min-h-full flex-col p-4 lg:min-h-[calc(100dvh_-_8rem)]">
 
-        <button type="button" data-instructor-menu class="mb-3 text-sm text-gray-500 lg:hidden cursor-pointer">&times; Close menu</button>
+        <button type="button" data-instructor-menu aria-label="Close menu"
+                class="mb-3 ml-auto flex h-10 w-10 items-center justify-center rounded-lg border border-gray-300 text-lg leading-none text-gray-700 hover:bg-gray-100 lg:hidden cursor-pointer">&times;</button>
 
         <div class="flex items-center gap-3">
           {{ avatar(current_user) }}

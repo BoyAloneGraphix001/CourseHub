@@ -223,10 +223,7 @@
   {% if current_user.is_authenticated and current_user.is_instructor %}
     <a href="{{ url_for('instructor.dashboard') }}" class="btn mt-6 bg-sand-500 text-brand-900 hover:brightness-95">Go to instructor dashboard</a>
   {% elif current_user.is_authenticated %}
-    <form method="post" action="{{ url_for('student.become_instructor') }}" class="mt-6 inline">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      <button type="submit" class="btn bg-sand-500 text-brand-900 hover:brightness-95 cursor-pointer">Become an instructor</button>
-    </form>
+    <p class="mt-3 text-sm text-brand-100">Instructor access is selected when you create your account.</p>
   {% else %}
     <a href="{{ url_for('auth.register') }}" class="btn mt-6 bg-sand-500 text-brand-900 hover:brightness-95 cursor-pointer">Become an instructor</a>
   {% endif %}

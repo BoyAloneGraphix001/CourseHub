@@ -236,15 +236,6 @@ def change_password():
     return redirect(url_for("student.edit_profile"))
 
 
-@student.route("/become-instructor", methods=["POST"])
-@login_required
-def become_instructor():
-    current_user.is_instructor = True
-    db.session.commit()
-    flash("Instructor tools are now turned on.", "success")
-    return redirect(url_for("instructor.dashboard"))
-
-
 # ───────────── Report a course ─────────────
 @student.route("/report/<int:course_id>", methods=["GET", "POST"])
 @login_required

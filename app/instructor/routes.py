@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask import Blueprint, render_template, redirect, url_for, flash, request, abort
 from flask_login import current_user
 from sqlalchemy import func
 from sqlalchemy.orm import joinedload, selectinload
@@ -19,7 +19,7 @@ def guard():
     if not current_user.is_authenticated:
         return login_manager.unauthorized()
     if not current_user.is_instructor:
-        return render_template("instructor/become.html")
+        abort(403)
 
 
 @instructor.context_processor

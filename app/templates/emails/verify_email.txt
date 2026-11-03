@@ -1,0 +1,11 @@
+Hi {{ user.username }},
+
+Your CourseHub verification code is:
+
+{{ otp }}
+
+The code expires in {{ minutes }} minutes.
+
+If you didn't create a CourseHub account, you can ignore this email.
+
+CourseHub

@@ -35,6 +35,14 @@ class LoginForm(FlaskForm):
     remember = BooleanField('Remember me')
     submit = SubmitField('Log in')
 
+
+class VerifyOtpForm(FlaskForm):
+    otp = StringField('Verification code', validators=[
+        DataRequired(),
+        Length(min=6, max=6, message='Enter the 6-digit code.')
+    ])
+    submit = SubmitField('Verify email')
+
 class ForgotPasswordForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     submit = SubmitField('Send reset link')

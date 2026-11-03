@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% from "components/_form_field.html" import render_field %}
+
+{% block main_class %}flex flex-col justify-center{% endblock %}
+{% block content %}
+<div class="mx-auto w-full max-w-md">
+  <div class="card p-8">
+    <h1 class="text-2xl font-bold tracking-tight">Verify your email</h1>
+    <p class="mt-1 text-sm text-gray-600">
+      Enter the 6-digit code sent to <strong>{{ user.email }}</strong>.
+    </p>
+
+    <form method="POST" novalidate class="mt-6" action="{{ url_for('auth.verify_email') }}">
+      {{ form.hidden_tag() }}
+      {{ render_field(form.otp, placeholder='123456', inputmode='numeric', autocomplete='one-time-code') }}
+      {{ form.submit(class_='btn-primary w-full cursor-pointer') }}
+    </form>
+
+    <form method="POST" class="mt-4 text-center" action="{{ url_for('auth.resend_verification') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button type="submit" class="text-sm font-medium text-brand-600 hover:underline cursor-pointer">
+        Resend verification code
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

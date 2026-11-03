@@ -21,6 +21,13 @@ class User(db.Model, UserMixin):
     is_instructor = db.Column(db.Boolean, default=False)
     is_admin = db.Column(db.Boolean, default=False)
     is_active_account = db.Column(db.Boolean, default=True)   # False = suspended
+    email_verified = db.Column(db.Boolean, default=False, nullable=False)
+    otp_hash = db.Column(db.String(256))
+    otp_expires_at = db.Column(db.DateTime)
+    otp_sent_at = db.Column(db.DateTime)
+    otp_resend_count = db.Column(db.Integer, default=0, nullable=False)
+    otp_resend_window_start = db.Column(db.DateTime)
+    otp_attempts = db.Column(db.Integer, default=0, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     updated_at = db.Column(db.DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
 

@@ -28,6 +28,8 @@ class User(db.Model, UserMixin):
     otp_resend_count = db.Column(db.Integer, default=0, nullable=False)
     otp_resend_window_start = db.Column(db.DateTime)
     otp_attempts = db.Column(db.Integer, default=0, nullable=False)
+    failed_login_attempts = db.Column(db.Integer, default=0, nullable=False)
+    login_locked_until = db.Column(db.DateTime)
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     updated_at = db.Column(db.DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
 
@@ -61,9 +63,10 @@ class User(db.Model, UserMixin):
     #     except:
     #         return None
     #     return db.session.get(User, user_id)
-
-
-
+class LoginAttempt(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ip_address = db.Column(db.String(45), nullable=False, index=True)
+    attempted_at = db.Column(db.DateTime, default=datetime.now(timezone.utc), nullable=False, index=True)
 
 
 # Courses   

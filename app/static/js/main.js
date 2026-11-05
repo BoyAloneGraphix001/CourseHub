@@ -112,6 +112,17 @@
     if (/bg-(green|blue)-50/.test(el.className)) setTimeout(() => el.remove(), 6000);
   });
 
+  /* ---------- Email/SMS one-time-code autofill ---------- */
+  const otpInput = $('input[autocomplete="one-time-code"]');
+  if (otpInput) {
+    otpInput.addEventListener('input', () => {
+      otpInput.value = otpInput.value.replace(/\D/g, '').slice(0, 6);
+      if (otpInput.value.length === 6) {
+        otpInput.form?.requestSubmit();
+      }
+    });
+  }
+
   /* ---------- Scroll reveal ---------- */
   function reveal(root = $('#app')) {
     if (!root || reduceMotion || !('IntersectionObserver' in window)) return;

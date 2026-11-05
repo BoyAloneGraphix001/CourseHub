@@ -12,7 +12,7 @@
 
     <form method="POST" novalidate class="mt-6" action="{{ url_for('auth.verify_email') }}">
       {{ form.hidden_tag() }}
-      {{ render_field(form.otp, placeholder='123456', inputmode='numeric', autocomplete='one-time-code') }}
+      {{ render_field(form.otp, placeholder='123456', inputmode='numeric', autocomplete='one-time-code', maxlength='6', pattern='[0-9]{6}', spellcheck='false', autofocus=true) }}
       {{ form.submit(class_='btn-primary w-full cursor-pointer') }}
     </form>
 

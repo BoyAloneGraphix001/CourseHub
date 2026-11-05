@@ -1,11 +1,21 @@
-{% macro render_field(field, placeholder='') %}
+{% macro render_field(field, placeholder='', autocomplete=none, autofocus=false, rows=none, inputmode=none, maxlength=none, pattern=none, spellcheck=none) %}
   <div class="mb-4">
     {{ field.label(class_='mb-1.5 block text-sm font-medium text-gray-900') }}
+    {% set field_kwargs = {'placeholder': placeholder} %}
+    {% if autocomplete is not none %}{% set _ = field_kwargs.update({'autocomplete': autocomplete}) %}{% endif %}
+    {% if autofocus %}{% set _ = field_kwargs.update({'autofocus': true}) %}{% endif %}
+    {% if rows is not none %}{% set _ = field_kwargs.update({'rows': rows}) %}{% endif %}
+    {% if inputmode is not none %}{% set _ = field_kwargs.update({'inputmode': inputmode}) %}{% endif %}
+    {% if maxlength is not none %}{% set _ = field_kwargs.update({'maxlength': maxlength}) %}{% endif %}
+    {% if pattern is not none %}{% set _ = field_kwargs.update({'pattern': pattern}) %}{% endif %}
+    {% if spellcheck is not none %}{% set _ = field_kwargs.update({'spellcheck': spellcheck}) %}{% endif %}
     {% if field.errors %}
-      {{ field(class_='w-full rounded-lg border border-red-500 bg-white px-3.5 py-2.5 text-sm outline-none focus:ring-2 focus:ring-red-500/30', placeholder=placeholder, **kwargs) }}
+      {% set _ = field_kwargs.update({'class_': 'w-full rounded-lg border border-red-500 bg-white px-3.5 py-2.5 text-sm outline-none focus:ring-2 focus:ring-red-500/30'}) %}
+      {{ field(**field_kwargs) }}
       <p class="mt-1.5 text-sm text-red-700">{{ field.errors[0] }}</p>
     {% else %}
-      {{ field(class_='w-full rounded-lg border border-gray-300 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30', placeholder=placeholder, **kwargs) }}
+      {% set _ = field_kwargs.update({'class_': 'w-full rounded-lg border border-gray-300 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30'}) %}
+      {{ field(**field_kwargs) }}
     {% endif %}
   </div>
 {% endmacro %}

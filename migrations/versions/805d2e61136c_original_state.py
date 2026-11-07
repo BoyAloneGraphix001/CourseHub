@@ -45,7 +45,6 @@ def upgrade():
         batch_op.alter_column('created_at',
                existing_type=sa.DATETIME(),
                nullable=True)
-        batch_op.drop_constraint(batch_op.f('uq_report_course_reporter'), type_='unique')
 
     with op.batch_alter_table('user', schema=None) as batch_op:
         batch_op.alter_column('created_at',
@@ -69,7 +68,7 @@ def downgrade():
                nullable=False)
 
     with op.batch_alter_table('report', schema=None) as batch_op:
-        batch_op.create_unique_constraint(batch_op.f('uq_report_course_reporter'), ['course_id', 'reporter_id'])
+        
         batch_op.alter_column('created_at',
                existing_type=sa.DATETIME(),
                nullable=False)

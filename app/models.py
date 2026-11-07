@@ -74,6 +74,14 @@ class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
 
+    __table_args__ = (
+        db.Index(
+            'uq_category_name_lower',
+            db.func.lower(name),
+            unique=True
+        ),
+    )
+
     courses = db.relationship('Course', backref='category', lazy=True)
 
 class Course(db.Model):

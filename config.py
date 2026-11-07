@@ -6,6 +6,11 @@ load_dotenv()
 class Config:
     SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI')
     SQLALCHEMY_TRACK_MODIFICATIONS = os.getenv('SQLALCHEMY_TRACK_MODIFICATIONS') == 'True'
+    DB_HOST = os.getenv('DB_HOST', 'localhost')
+    DB_PORT = os.getenv('DB_PORT', '5432')
+    DB_USER = os.getenv('DB_USER', 'course_user')
+    DB_PASSWORD = os.getenv('DB_PASSWORD', 'CourseHub!')
+    DB_NAME = os.getenv('DB_NAME', 'coursehub')
     SECRET_KEY = os.getenv('SECRET_KEY')
     DEBUG = os.getenv('FLASK_DEBUG', 'False').lower() == 'true'
     MAX_CONTENT_LENGTH = 6 * 1024 * 1024  # safety net, slightly above the 5MB image rule

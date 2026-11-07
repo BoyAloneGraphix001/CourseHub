@@ -15,8 +15,6 @@ node_modules/
 app/static/css/tailwind.css
 
 # User uploads (keep the folder, not the files)
-app/static/uploads/*
-!app/static/uploads/.gitkeep
 
 # Tests, logs, tooling
 .pytest_cache/
